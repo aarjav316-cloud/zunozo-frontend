@@ -28,6 +28,20 @@ export const verifyOtp = async (data) => {
   }
 };
 
+export const resendOtp = async (data) => {
+  try {
+    const response = await axiosInstance.post("/auth/resend-otp", data);
+    return response.data;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        success: false,
+        message: "Something went wrong",
+      }
+    );
+  }
+};
+
 export const signinUser = async (data) => {
   try {
     const response = await axiosInstance.post("/auth/login", data);
@@ -97,30 +111,3 @@ export const getCurrentUser = async () => {
     );
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
