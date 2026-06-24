@@ -5,6 +5,7 @@ import AuthCard from "../../components/ui/AuthCard";
 import Input from "../../components/ui/Input";
 import PasswordInput from "../../components/ui/PasswordInput";
 import Button from "../../components/ui/Button";
+import GoogleButton from "../../components/ui/GoogleButton";
 import { signinUser } from "../../api/authApi";
 
 function SignInPage() {
@@ -33,6 +34,10 @@ function SignInPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleAuth = () => {
+    window.location.href = "http://localhost:5000/api/v1/auth/google";
   };
 
   return (
@@ -82,6 +87,14 @@ function SignInPage() {
             {loading ? "Signing in..." : "Sign In"}
           </Button>
         </form>
+
+        <div className="my-6 flex items-center">
+          <div className="flex-1 border-t border-gray-700"></div>
+          <span className="px-4 text-sm text-gray-400">or continue with</span>
+          <div className="flex-1 border-t border-gray-700"></div>
+        </div>
+
+        <GoogleButton onClick={handleGoogleAuth} />
 
         <div className="mt-6 text-center text-sm text-gray-400">
           Don't have an account?{" "}
