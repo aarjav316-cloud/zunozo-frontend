@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getCurrentUser } from "../../api/authApi";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -11,6 +14,23 @@ const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await getCurrentUser();
+        if (response.success && response.user) {
+          setUser(response.user);
+        }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   return (
@@ -25,10 +45,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-full gap-6">
           {/* Logo & Search Bar */}
           <div className="flex items-center gap-6 flex-1">
-            <Link
-              to="/"
-              className="flex items-center gap-2 group flex-shrink-0"
-            >
+            <Link to="/" className="flex items-center gap-2 group shrink-0">
               <div className="w-8 h-8 bg-linear-to-br from-purple-600 to-orange-500 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
                 <span className="text-white font-bold text-lg">Z</span>
               </div>
@@ -76,12 +93,22 @@ const Navbar = () => {
             >
               Become Organizer
             </Link>
-            <Link
-              to="/signin"
-              className="inline-flex items-center justify-center px-6 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
-            >
-              Login
-            </Link>
+
+            {/* Auth Button/Avatar */}
+            {authLoading ? (
+              <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
+            ) : user ? (
+              <button className="inline-flex items-center justify-center w-10 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm">
+                {user.name?.charAt(0).toUpperCase() || "U"}
+              </button>
+            ) : (
+              <Link
+                to="/signin"
+                className="inline-flex items-center justify-center px-6 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>
