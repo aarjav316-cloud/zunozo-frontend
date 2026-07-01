@@ -1,12 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function PendingEvent() {
-  return (
-    <div>PendingEvent</div>
-  )
+  return <div>PendingEvent</div>;
 }
 
-export default PendingEvent
-
-
-
+export default PendingEvent;

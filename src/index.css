@@ -1,1 +1,21 @@
 @import "tailwindcss";
+
+/* Custom scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scale hover effect */
+.group:hover .group-hover\:scale-103 {
+  transform: scale(1.03);
+}
