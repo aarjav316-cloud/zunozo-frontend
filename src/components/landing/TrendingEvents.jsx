@@ -1,56 +1,99 @@
-import React from "react";
-
-const EventCard = ({ event }) => {
-  return (
-    <div className="flex-none w-80 group cursor-pointer">
-      <div className="relative overflow-hidden rounded-2xl transition-transform duration-300 group-hover:scale-103">
-        <div className="aspect-3/4 bg-linear-to-br from-purple-600 to-orange-500"></div>
-        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        <h3 className="text-xl font-semibold text-white">{event.title}</h3>
-        <p className="text-gray-400">{event.location}</p>
-        <div className="flex items-center justify-between">
-          <span className="text-gray-300">{event.date}</span>
-          <span className="text-purple-500 font-semibold">{event.price}</span>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { useState, useEffect } from "react";
+import EventCard from "../events/EventCard";
+import { getApprovedEvents } from "../../api/eventApi";
 
 const TrendingEvents = () => {
-  const events = [
-    {
-      id: 1,
-      title: "Summer Music Festival",
-      location: "Mumbai, India",
-      date: "Aug 15, 2026",
-      price: "₹1,299",
-    },
-    {
-      id: 2,
-      title: "Tech Startup Mixer",
-      location: "Bangalore, India",
-      date: "Aug 20, 2026",
-      price: "Free",
-    },
-    {
-      id: 3,
-      title: "Sunset Beach Party",
-      location: "Goa, India",
-      date: "Aug 25, 2026",
-      price: "₹899",
-    },
-    {
-      id: 4,
-      title: "Art & Wine Night",
-      location: "Delhi, India",
-      date: "Aug 30, 2026",
-      price: "₹599",
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await getApprovedEvents();
+        if (response.success && response.events) {
+          setEvents(response.events.slice(0, 8));
+        }
+      } catch (err) {
+        setError(err.message || "Failed to load events");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h2 className="text-5xl font-bold text-white mb-4">
+              Trending Near You
+            </h2>
+            <p className="text-xl text-gray-400">
+              Handpicked experiences this week
+            </p>
+          </div>
+
+          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex-none w-80">
+                <div className="aspect-3/4 bg-gray-800 rounded-2xl animate-pulse" />
+                <div className="mt-4 space-y-2">
+                  <div className="h-6 bg-gray-800 rounded animate-pulse" />
+                  <div className="h-4 bg-gray-800 rounded w-2/3 animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h2 className="text-5xl font-bold text-white mb-4">
+              Trending Near You
+            </h2>
+            <p className="text-xl text-gray-400">
+              Handpicked experiences this week
+            </p>
+          </div>
+
+          <div className="text-center py-12">
+            <p className="text-gray-400">{error}</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (events.length === 0) {
+    return (
+      <section className="py-24 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12">
+            <h2 className="text-5xl font-bold text-white mb-4">
+              Trending Near You
+            </h2>
+            <p className="text-xl text-gray-400">
+              Handpicked experiences this week
+            </p>
+          </div>
+
+          <div className="text-center py-12">
+            <p className="text-gray-400">No events available at the moment</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 px-6">
@@ -66,7 +109,7 @@ const TrendingEvents = () => {
 
         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {events.map((event) => (
-            <EventCard key={event.id} event={event} />
+            <EventCard key={event._id} event={event} />
           ))}
         </div>
       </div>
