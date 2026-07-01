@@ -1,5 +1,27 @@
 @import "tailwindcss";
 
+/* Google Fonts */
+@font-face {
+  font-family: "Anton";
+  src: url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+}
+
+/* Font families */
+@theme {
+  --font-anton: "Anton", sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+
+/* Default font */
+body {
+  font-family: var(--font-inter);
+}
+
 /* Custom scrollbar utilities */
 .scrollbar-hide {
   -ms-overflow-style: none;

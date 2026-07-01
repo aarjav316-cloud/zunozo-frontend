@@ -4,10 +4,10 @@ import heroImage from "../../assets/HEROsection.jpg";
 const Hero = () => {
   return (
     <section className="min-h-[85vh] flex items-center pt-20 px-4 sm:px-6">
-      <div className="max-w-7xl mx-auto w-full">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+      <div className="max-w-[1300px] mx-auto w-full px-6">
+        <div className="grid lg:grid-cols-[53%_47%] gap-12 lg:gap-16 items-center">
           <div className="space-y-6 md:space-y-8 text-center md:text-left">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+            <h1 className="font-['Anton'] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white leading-none tracking-wide uppercase lg:mt-10">
               DISCOVER
               <br />
               THE NEXT
@@ -40,9 +40,9 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="relative w-full flex justify-center order-last md:order-none">
+          <div className="relative w-full flex justify-center order-last md:order-none lg:mt-10">
             <div className="absolute inset-0 bg-linear-to-br from-purple-600/20 to-orange-500/20 rounded-3xl blur-3xl"></div>
-            <div className="relative w-full max-w-[320px] sm:max-w-[400px] md:w-[520px] h-[450px] sm:h-[550px] md:h-[700px] rounded-[40px] overflow-hidden border border-gray-700 shadow-2xl">
+            <div className="relative w-full max-w-[340px] sm:max-w-[440px] md:w-[580px] lg:w-[760px] aspect-[4/5] rounded-[40px] overflow-hidden border border-gray-700 shadow-2xl">
               <img
                 src={heroImage}
                 alt="Zunozo Events"
