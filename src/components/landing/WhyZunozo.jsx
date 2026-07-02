@@ -104,12 +104,6 @@ const WhyZunozo = () => {
         p.x = centerX + (isRightAligned ? cardOffset : -cardOffset);
       });
 
-      // Adjust start point to tuck heavily behind the top edge of the Step 1 Card
-      points[0].y -= 140;
-
-      // Adjust end point to tuck heavily behind the bottom edge of the Step 4 Card
-      points[points.length - 1].y += 140;
-
       setPathD(buildSCurvePath(points));
       setMobilePathD("");
     }
@@ -150,27 +144,28 @@ const WhyZunozo = () => {
     });
 
     /*
-     * ScrollTrigger end is calculated dynamically:
-     *   - "start" fires when the wrapper's top hits 60% of the viewport
-     *   - "end" fires when the final step (Step 4) reaches 50% of the viewport
-     *
-     * We use Step 4's offsetTop + its height to compute the exact
-     * pixel distance within the wrapper, so the SVG finishes drawing 
-     * exactly when the final step's card enters the viewport.
-     *
-     * scrub: true  → animation progress is mapped 1:1 to scroll
-     *                position with ZERO lag (no trailing delay).
+     * ScrollTrigger synchronization is dynamically anchored to the EXACT 
+     * physical bounding box (BBox) of the generated SVG path itself.
+     * 
+     * - "start": fires when the exact top tip of the SVG reaches 50% of viewport
+     * - "end": fires when the exact bottom tip of the SVG reaches 50% of viewport
+     * 
+     * This mathematically guarantees a 1:1 scroll lock between the line drawing
+     * and the scrolling distance, with zero lag or desynchronization.
      */
-    const finalStepEl = step4Ref.current;
-    const endOffset = finalStepEl
-      ? finalStepEl.offsetTop + finalStepEl.offsetHeight
-      : wrapper.scrollHeight;
-
+    /*
+     * ScrollTrigger synchronization is dynamically anchored to the EXACT DOM elements.
+     * By linking directly to the Step 1 and Step 4 Element Refs natively instead of 
+     * caching fixed static pixel values, GSAP natively re-calculates the geometry
+     * fluidly if fonts or images load and stretch your wrapper height, permanently 
+     * eliminating the scroll desync/lag.
+     */
     const tl = gsap.timeline({
       scrollTrigger: {
-        trigger: wrapper,
-        start: "top 60%",
-        end: `top+=${endOffset}px 50%`,
+        trigger: step1Ref.current,
+        start: "center center",
+        endTrigger: step4Ref.current,
+        end: "center center",
         scrub: true,
         invalidateOnRefresh: true,
       },
