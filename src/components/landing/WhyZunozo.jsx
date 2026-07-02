@@ -14,17 +14,17 @@ gsap.registerPlugin(ScrollTrigger);
  * @param {number} amplitude – horizontal curve offset (px)
  * @returns {string} SVG path `d` attribute
  */
-const buildSCurvePath = (points, amplitude = 200) => {
+const buildSCurvePath = (points) => {
   if (points.length < 2) return "";
   let d = `M ${points[0].x} ${points[0].y}`;
   for (let i = 0; i < points.length - 1; i++) {
     const curr = points[i];
     const next = points[i + 1];
     const midY = (curr.y + next.y) / 2;
-    // alternate direction each segment
-    const dir = i % 2 === 0 ? 1 : -1;
-    const cpX = curr.x + amplitude * dir;
-    d += ` C ${cpX} ${midY}, ${next.x - amplitude * dir} ${midY}, ${next.x} ${next.y}`;
+    // Control points perfectly match their respective start/end X values
+    // This creates a flawless vertical exit/entrance from behind the cards
+    // smoothly swooping horizontally across the center screen midway.
+    d += ` C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y}`;
   }
   return d;
 };
@@ -61,7 +61,8 @@ const WhyZunozo = () => {
     const wRect = wrapper.getBoundingClientRect();
     setWrapperHeight(wRect.height);
 
-    const cards = [step1Ref, step2Ref, step3Ref, step4Ref, ctaRef];
+    // For the timeline path, we only connect the 4 steps (not the CTA text)
+    const cards = [step1Ref, step2Ref, step3Ref, step4Ref];
     const points = cards
       .map((ref) => {
         if (!ref.current) return null;
@@ -76,12 +77,14 @@ const WhyZunozo = () => {
 
     if (points.length < 2) return;
 
-    setAnchorPoints(points);
-
     if (mobile) {
       // Centered vertical line through midpoints
       const centerX = wRect.width / 2;
       const mobilePoints = points.map((p) => ({ ...p, x: centerX }));
+      // Adjust start and end to tuck slightly behind cards if needed, but for mobile centered is fine.
+      mobilePoints[0].y -= 40;
+      mobilePoints[mobilePoints.length - 1].y += 40;
+
       let md = `M ${mobilePoints[0].x} ${mobilePoints[0].y}`;
       for (let i = 1; i < mobilePoints.length; i++) {
         md += ` L ${mobilePoints[i].x} ${mobilePoints[i].y}`;
@@ -90,8 +93,24 @@ const WhyZunozo = () => {
       setPathD("");
     } else {
       // Elegant S-curve for desktop / tablet
-      const amplitude = window.innerWidth < 1280 ? 120 : 200;
-      setPathD(buildSCurvePath(points, amplitude));
+      const centerX = wRect.width / 2;
+      const cardOffset = wRect.width / 4;
+
+      // Align points exactly behind the centers of the image cards
+      points.forEach((p, idx) => {
+        // Step 1 (idx 0) & 3 (idx 2): Card is on the Right
+        // Step 2 (idx 1) & 4 (idx 3): Card is on the Left
+        const isRightAligned = idx % 2 === 0;
+        p.x = centerX + (isRightAligned ? cardOffset : -cardOffset);
+      });
+
+      // Adjust start point to tuck heavily behind the top edge of the Step 1 Card
+      points[0].y -= 140;
+
+      // Adjust end point to tuck heavily behind the bottom edge of the Step 4 Card
+      points[points.length - 1].y += 140;
+
+      setPathD(buildSCurvePath(points));
       setMobilePathD("");
     }
   }, []);
@@ -133,18 +152,18 @@ const WhyZunozo = () => {
     /*
      * ScrollTrigger end is calculated dynamically:
      *   - "start" fires when the wrapper's top hits 60% of the viewport
-     *   - "end" fires when the CTA (last child) reaches 50% of the viewport
+     *   - "end" fires when the final step (Step 4) reaches 50% of the viewport
      *
-     * We use the CTA's offsetTop + its height to compute the exact
-     * pixel distance within the wrapper, then express it as
-     * "top+<distance>px 50%" so GSAP resolves it in real units.
+     * We use Step 4's offsetTop + its height to compute the exact
+     * pixel distance within the wrapper, so the SVG finishes drawing 
+     * exactly when the final step's card enters the viewport.
      *
      * scrub: true  → animation progress is mapped 1:1 to scroll
      *                position with ZERO lag (no trailing delay).
      */
-    const ctaEl = ctaRef.current;
-    const endOffset = ctaEl
-      ? ctaEl.offsetTop + ctaEl.offsetHeight
+    const finalStepEl = step4Ref.current;
+    const endOffset = finalStepEl
+      ? finalStepEl.offsetTop + finalStepEl.offsetHeight
       : wrapper.scrollHeight;
 
     const tl = gsap.timeline({
@@ -162,13 +181,9 @@ const WhyZunozo = () => {
       ease: "none",
     });
 
-    // Animate anchor nodes (scale in)
-    nodeRefs.current.forEach((node) => {
-      if (!node) return;
-      gsap.set(node, { scale: 0, transformOrigin: "center" });
-    });
 
-    // Animate cards & nodes sequentially
+
+    // Animate cards sequentially
     const cards = [step1Ref, step2Ref, step3Ref, step4Ref, ctaRef];
     cards.forEach((cardRef, i) => {
       if (!cardRef.current) return;
@@ -187,21 +202,6 @@ const WhyZunozo = () => {
           },
         },
       );
-
-      // Scale in the corresponding node
-      const node = nodeRefs.current[i];
-      if (node) {
-        gsap.to(node, {
-          scale: 1,
-          duration: 0.4,
-          ease: "back.out(1.7)",
-          scrollTrigger: {
-            trigger: cardRef.current,
-            start: "top 75%",
-            toggleActions: "play none none none",
-          },
-        });
-      }
     });
 
     // Refresh after a tick so measurements are accurate post-layout
@@ -263,19 +263,6 @@ const WhyZunozo = () => {
                   filter: "drop-shadow(0 0 6px rgba(255,255,255,0.12))",
                 }}
               />
-              {/* Metro-map anchor nodes */}
-              {anchorPoints.map((pt, i) => (
-                <circle
-                  key={i}
-                  ref={(el) => (nodeRefs.current[i] = el)}
-                  cx={pt.x}
-                  cy={pt.y}
-                  r="8"
-                  fill="#09090B"
-                  stroke="rgba(255,255,255,0.65)"
-                  strokeWidth="3"
-                />
-              ))}
             </svg>
           )}
 
@@ -297,27 +284,10 @@ const WhyZunozo = () => {
                 strokeLinecap="round"
                 fill="none"
               />
-              {/* Mobile anchor nodes */}
-              {anchorPoints.map((pt, i) => {
-                const cx =
-                  (wrapperRef.current?.offsetWidth || 400) / 2;
-                return (
-                  <circle
-                    key={i}
-                    ref={(el) =>
-                      (nodeRefs.current[i] = el)
-                    }
-                    cx={cx}
-                    cy={pt.y}
-                    r="6"
-                    fill="#09090B"
-                    stroke="rgba(255,255,255,0.4)"
-                    strokeWidth="2"
-                  />
-                );
-              })}
             </svg>
           )}
+
+
 
           {/* ─── Step 1 — Discover (UNCHANGED card design) ─── */}
           <div
