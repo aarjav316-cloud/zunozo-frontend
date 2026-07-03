@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import step1Image from "../../assets/step1image.webp";
+import step2Image from "../../assets/step2image.jpg";
+import step3Image from "../../assets/step3image.jpg";
+import step4Image from "../../assets/step4image.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,6 +45,9 @@ const WhyZunozo = () => {
   const step4Ref = useRef(null);
   const ctaRef = useRef(null);
 
+  const maskRef = useRef(null);
+  const mobileMaskRef = useRef(null);
+
   /* node refs – the small circles at each anchor */
   const nodeRefs = useRef([]);
 
@@ -61,8 +68,27 @@ const WhyZunozo = () => {
     const wRect = wrapper.getBoundingClientRect();
     setWrapperHeight(wRect.height);
 
-    // For the timeline path, we only connect the 4 steps (not the CTA text)
-    const cards = [step1Ref, step2Ref, step3Ref, step4Ref];
+    // Connect all 4 steps plus the final CTA text
+    const cards = [step1Ref, step2Ref, step3Ref, step4Ref, ctaRef];
+
+    // ── CRITICAL: Strip GSAP inline styles before measuring ──
+    // GSAP's fromTo animation injects inline `transform: translateY(60px)`
+    // and `opacity: 0` on cards waiting to animate. If computePath() runs
+    // while those styles are active, getBoundingClientRect() returns positions
+    // shifted by 60px, corrupting the SVG path coordinates.
+    const savedStyles = cards.map((ref) => {
+      if (!ref.current) return null;
+      const el = ref.current;
+      const saved = {
+        transform: el.style.transform,
+        opacity: el.style.opacity,
+      };
+      // Temporarily clear GSAP-injected inline styles
+      el.style.transform = "";
+      el.style.opacity = "";
+      return saved;
+    });
+
     const points = cards
       .map((ref) => {
         if (!ref.current) return null;
@@ -74,6 +100,14 @@ const WhyZunozo = () => {
         };
       })
       .filter(Boolean);
+
+    // ── Restore saved inline styles ──
+    cards.forEach((ref, i) => {
+      if (!ref.current || !savedStyles[i]) return;
+      const el = ref.current;
+      el.style.transform = savedStyles[i].transform;
+      el.style.opacity = savedStyles[i].opacity;
+    });
 
     if (points.length < 2) return;
 
@@ -96,12 +130,17 @@ const WhyZunozo = () => {
       const centerX = wRect.width / 2;
       const cardOffset = wRect.width / 4;
 
-      // Align points exactly behind the centers of the image cards
+      // Align points exactly behind the centers of the image cards, except for the CTA
       points.forEach((p, idx) => {
-        // Step 1 (idx 0) & 3 (idx 2): Card is on the Right
-        // Step 2 (idx 1) & 4 (idx 3): Card is on the Left
-        const isRightAligned = idx % 2 === 0;
-        p.x = centerX + (isRightAligned ? cardOffset : -cardOffset);
+        if (idx === 4) {
+          // CTA is idx 4
+          p.x = centerX;
+        } else {
+          // Step 1 (idx 0) & 3 (idx 2): Card is on the Right
+          // Step 2 (idx 1) & 4 (idx 3): Card is on the Left
+          const isRightAligned = idx % 2 === 0;
+          p.x = centerX + (isRightAligned ? cardOffset : -cardOffset);
+        }
       });
 
       setPathD(buildSCurvePath(points));
@@ -111,101 +150,102 @@ const WhyZunozo = () => {
 
   /* ─── on mount: measure + animate ─── */
   useEffect(() => {
-    // Wait a frame so the DOM has painted
-    const raf = requestAnimationFrame(() => {
+    let debounceTimer = null;
+
+    // Debounced handler: consolidates rapid-fire layout changes into
+    // one final stable computation, preventing repeated GSAP destroy/recreate cycles.
+    const debouncedUpdate = () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        computePath();
+      }, 50);
+    };
+
+    // Initial computation after first paint
+    const rafId = requestAnimationFrame(() => {
       computePath();
     });
 
-    const onResize = () => {
-      computePath();
-      ScrollTrigger.refresh();
-    };
-    window.addEventListener("resize", onResize);
+    // Listen for full page load (stylesheets, images, etc.)
+    const onLoad = () => debouncedUpdate();
+    if (document.readyState !== "complete") {
+      window.addEventListener("load", onLoad);
+    }
+
+    // Listen for fonts ready (prevents font-swap layout shift)
+    if (document.fonts) {
+      document.fonts.ready.then(() => debouncedUpdate());
+    }
+
+    // Watch for wrapper size changes
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== "undefined" && wrapperRef.current) {
+      resizeObserver = new ResizeObserver(() => debouncedUpdate());
+      resizeObserver.observe(wrapperRef.current);
+    }
+
+    // Standard window resize
+    window.addEventListener("resize", debouncedUpdate);
 
     return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", onResize);
+      clearTimeout(debounceTimer);
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("load", onLoad);
+      window.removeEventListener("resize", debouncedUpdate);
+      if (resizeObserver) resizeObserver.disconnect();
     };
   }, [computePath]);
 
   /* ─── GSAP animations (runs after path is computed) ─── */
   useEffect(() => {
     const activePathRef = isMobile ? mobilePathRef : pathRef;
+    const activeMaskRef = isMobile ? mobileMaskRef : maskRef;
     const activePath = activePathRef.current;
+    const activeMask = activeMaskRef.current;
     const wrapper = wrapperRef.current;
 
-    if (!activePath || !wrapper) return;
+    if (!activePath || !activeMask || !wrapper) return;
 
-    const pathLength = activePath.getTotalLength();
+    // Reset dash properties just in case
+    gsap.set(activePath, { clearProps: "strokeDasharray,strokeDashoffset" });
 
-    gsap.set(activePath, {
-      strokeDasharray: pathLength,
-      strokeDashoffset: pathLength,
-    });
+    // Ensure the mask starts at the very top of the path, and is 0 height.
+    const pathBBox = activePath.getBBox();
 
-    /*
-     * ScrollTrigger synchronization is dynamically anchored to the EXACT 
-     * physical bounding box (BBox) of the generated SVG path itself.
-     * 
-     * - "start": fires when the exact top tip of the SVG reaches 50% of viewport
-     * - "end": fires when the exact bottom tip of the SVG reaches 50% of viewport
-     * 
-     * This mathematically guarantees a 1:1 scroll lock between the line drawing
-     * and the scrolling distance, with zero lag or desynchronization.
-     */
-    /*
-     * ScrollTrigger synchronization is dynamically anchored to the EXACT DOM elements.
-     * By linking directly to the Step 1 and Step 4 Element Refs natively instead of 
-     * caching fixed static pixel values, GSAP natively re-calculates the geometry
-     * fluidly if fonts or images load and stretch your wrapper height, permanently 
-     * eliminating the scroll desync/lag.
-     */
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: step1Ref.current,
-        start: "center center",
-        endTrigger: step4Ref.current,
-        end: "center center",
-        scrub: true,
-        invalidateOnRefresh: true,
+    // Animate the actual SVG attributes 'y' and 'height' so it works natively.
+    gsap.set(activeMask, {
+      attr: {
+        y: pathBBox.y,
+        height: 0,
+        x: -50, // overflow x slightly so stroke width doesn't get clipped
+        width: "120%",
       },
     });
 
-    tl.to(activePath, {
-      strokeDashoffset: 0,
-      ease: "none",
-    });
-
-
-
-    // Animate cards sequentially
-    const cards = [step1Ref, step2Ref, step3Ref, step4Ref, ctaRef];
-    cards.forEach((cardRef, i) => {
-      if (!cardRef.current) return;
-      gsap.fromTo(
-        cardRef.current,
-        { opacity: 0, y: 60 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: cardRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
+    // Scope GSAP and ScrollTriggers to wrapper to prevent breaking sibling triggers
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: step1Ref.current,
+          start: "center center",
+          endTrigger: ctaRef.current,
+          end: "center center",
+          scrub: true,
+          invalidateOnRefresh: true,
         },
-      );
-    });
+      });
 
-    // Refresh after a tick so measurements are accurate post-layout
-    requestAnimationFrame(() => ScrollTrigger.refresh());
+      tl.to(activeMask, {
+        attr: { height: pathBBox.height + 20 }, // add 20px buffer to ensure it reaches the end
+        ease: "none",
+      });
+    }, wrapperRef);
 
     return () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
+      // Safely kill/revert only triggers created inside this component context
+      ctx.revert();
     };
-  }, [pathD, mobilePathD, isMobile]);
+  }, [pathD, mobilePathD, isMobile, wrapperHeight]);
 
   /* ─── JSX ─── */
   return (
@@ -246,8 +286,14 @@ const WhyZunozo = () => {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              <defs>
+                <clipPath id="timeline-clip-desktop">
+                  <rect ref={maskRef} />
+                </clipPath>
+              </defs>
               <path
                 ref={pathRef}
+                clipPath="url(#timeline-clip-desktop)"
                 d={pathD}
                 stroke="rgba(255,255,255,0.65)"
                 strokeWidth="5"
@@ -271,8 +317,14 @@ const WhyZunozo = () => {
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
+              <defs>
+                <clipPath id="timeline-clip-mobile">
+                  <rect ref={mobileMaskRef} />
+                </clipPath>
+              </defs>
               <path
                 ref={mobilePathRef}
+                clipPath="url(#timeline-clip-mobile)"
                 d={mobilePathD}
                 stroke="rgba(255,255,255,0.35)"
                 strokeWidth="3"
@@ -281,8 +333,6 @@ const WhyZunozo = () => {
               />
             </svg>
           )}
-
-
 
           {/* ─── Step 1 — Discover (UNCHANGED card design) ─── */}
           <div
@@ -316,11 +366,11 @@ const WhyZunozo = () => {
             </div>
             <div className="relative order-1 lg:order-2">
               <div className="aspect-9/16 max-w-xs mx-auto bg-zinc-900 rounded-3xl p-4 shadow-2xl border border-white/10">
-                <div className="w-full h-full bg-linear-to-br from-purple-600/20 to-orange-500/20 rounded-2xl flex items-center justify-center">
-                  <div className="text-center text-white/50">
-                    Event Discovery UI
-                  </div>
-                </div>
+                <img
+                  src={step1Image}
+                  alt="Event Discovery"
+                  className="w-full h-full object-cover object-center rounded-2xl"
+                />
               </div>
             </div>
           </div>
@@ -332,12 +382,12 @@ const WhyZunozo = () => {
             style={{ zIndex: 1 }}
           >
             <div className="relative order-1">
-              <div className="aspect-16/10 bg-zinc-900 rounded-3xl p-8 shadow-2xl border border-white/10">
-                <div className="w-full h-full bg-linear-to-br from-orange-500/20 to-purple-600/20 rounded-2xl flex items-center justify-center">
-                  <div className="text-center text-white/50">
-                    Booking Interface
-                  </div>
-                </div>
+              <div className="aspect-16/10 bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                <img
+                  src={step2Image}
+                  alt="Booking Interface"
+                  className="w-full h-full object-cover object-center"
+                />
               </div>
             </div>
             <div className="space-y-6 order-2">
@@ -404,10 +454,12 @@ const WhyZunozo = () => {
               </div>
             </div>
             <div className="relative order-1 lg:order-2">
-              <div className="aspect-9/16 max-w-xs mx-auto bg-zinc-900 rounded-3xl p-4 shadow-2xl border border-white/10">
-                <div className="w-full h-full bg-linear-to-br from-purple-600/20 to-pink-600/20 rounded-2xl flex items-center justify-center">
-                  <div className="text-center text-white/50">Ticket UI</div>
-                </div>
+              <div className="aspect-9/16 max-w-xs mx-auto bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                <img
+                  src={step3Image}
+                  alt="Ticket UI"
+                  className="w-full h-full object-cover object-center"
+                />
               </div>
             </div>
           </div>
@@ -420,11 +472,11 @@ const WhyZunozo = () => {
           >
             <div className="relative order-1">
               <div className="aspect-video bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
-                <div className="w-full h-full bg-linear-to-br from-orange-500/30 to-purple-600/30 flex items-center justify-center">
-                  <div className="text-center text-white/50">
-                    Event Experience
-                  </div>
-                </div>
+                <img
+                  src={step4Image}
+                  alt="Event Experience"
+                  className="w-full h-full object-cover object-center"
+                />
               </div>
             </div>
             <div className="space-y-6 order-2">
@@ -460,11 +512,7 @@ const WhyZunozo = () => {
           </div>
 
           {/* ─── Final CTA (UNCHANGED design) ─── */}
-          <div
-            ref={ctaRef}
-            className="text-center pt-16"
-            style={{ zIndex: 1 }}
-          >
+          <div ref={ctaRef} className="text-center pt-16" style={{ zIndex: 1 }}>
             <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Ready to start your journey?
             </h3>

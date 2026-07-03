@@ -3,7 +3,6 @@ import Navbar from "../../components/landing/Navbar";
 import Hero from "../../components/landing/Hero";
 import TrendingEvents from "../../components/landing/TrendingEvents";
 import WhyZunozo from "../../components/landing/WhyZunozo";
-import BrowseCTA from "../../components/landing/BrowseCTA";
 import Footer from "../../components/landing/Footer";
 
 const Homepage = () => {
@@ -13,7 +12,6 @@ const Homepage = () => {
       <Hero />
       <TrendingEvents />
       <WhyZunozo />
-      <BrowseCTA />
       <Footer />
     </div>
   );
