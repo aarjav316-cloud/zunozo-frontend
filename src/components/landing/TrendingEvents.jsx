@@ -83,7 +83,7 @@ const TrendingEvents = () => {
         <div className="max-w-7xl mx-auto">
           {headingContent}
 
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide mt-10">
+          <div className="flex gap-6 overflow-x-auto py-4 px-1 scrollbar-hide mt-10 -mx-1">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="flex-none w-80">
                 <div className="aspect-3/4 bg-gray-800 rounded-2xl animate-pulse" />
@@ -132,7 +132,7 @@ const TrendingEvents = () => {
       <div className="max-w-7xl mx-auto">
         {headingContent}
 
-        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide mt-10">
+        <div className="flex gap-6 overflow-x-auto py-4 px-1 scrollbar-hide mt-10 -mx-1">
           {events.map((event) => (
             <EventCard key={event._id} event={event} />
           ))}
