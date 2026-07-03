@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import step1Image from "../../assets/step1image.webp";
@@ -516,7 +517,10 @@ const WhyZunozo = () => {
             <h3 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Ready to start your journey?
             </h3>
-            <button className="inline-flex items-center justify-center gap-2 px-10 h-14 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-lg">
+            <Link
+              to="/events"
+              className="inline-flex items-center justify-center gap-2 px-10 h-14 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-lg"
+            >
               Explore Events
               <svg
                 className="w-4 h-4"
@@ -531,7 +535,7 @@ const WhyZunozo = () => {
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 />
               </svg>
-            </button>
+            </Link>
           </div>
         </div>
         {/* ─── END Timeline Wrapper ─── */}

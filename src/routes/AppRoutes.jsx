@@ -7,12 +7,14 @@ import VerifyOtpPage from "../pages/auth/VerifyOtpPage";
 import SignInPage from "../pages/auth/SignInPage";
 import ForgotPasswordPage from "../pages/auth/ForgotPassword";
 import ResetPasswordPage from "../pages/auth/ResetPassword";
+import BrowseEvents from "../pages/public/BrowseEvents";
 
 const AppRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/events" element={<BrowseEvents />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/signin" element={<SignInPage />} />
