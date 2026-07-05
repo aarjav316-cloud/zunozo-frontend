@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyEvents, deleteEvent } from "../../api/eventApi";
-import MyEventCard from "../../components/organizer/MyEventCardNew";
+import MyEventCard from "../../components/organizer/MyEventCard";
 
 const MyEvents = () => {
   const navigate = useNavigate();
