@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { createEvent } from "../../api/eventApi";
 import FormSection from "../../components/organizer/CreateEvent/FormSection";
 import InputField from "../../components/organizer/CreateEvent/InputField";
+import DatePickerField from "../../components/organizer/CreateEvent/DatePickerField";
 import CategorySelector from "../../components/organizer/CreateEvent/CategorySelector";
 import TagsInput from "../../components/organizer/CreateEvent/TagsInput";
 import PricingToggle from "../../components/organizer/CreateEvent/PricingToggle";
@@ -243,19 +244,17 @@ const CreateEvent = () => {
             {/* Date & Time */}
             <FormSection title="Date & Time" description="Set the start and end schedule for your event.">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <InputField
+                <DatePickerField
                   label="Start Date & Time"
                   name="startDate"
-                  type="datetime-local"
                   value={formData.startDate}
                   onChange={handleChange}
                   error={errors.startDate}
                   required
                 />
-                <InputField
+                <DatePickerField
                   label="End Date & Time"
                   name="endDate"
-                  type="datetime-local"
                   value={formData.endDate}
                   onChange={handleChange}
                   error={errors.endDate}
