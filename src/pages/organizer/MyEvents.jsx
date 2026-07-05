@@ -8,6 +8,7 @@ import NoResults from "../../components/organizer/NoResults";
 import DeleteModal from "../../components/organizer/DeleteModal";
 import SkeletonCard from "../../components/organizer/SkeletonCard";
 import Dropdown from "../../components/ui/Dropdown";
+import Toast from "../../components/ui/Toast";
 
 const MyEvents = () => {
   const navigate = useNavigate();
@@ -20,6 +21,9 @@ const MyEvents = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [toast, setToast] = useState(null);
 
   const statusOptions = [
     "ALL",
@@ -85,18 +89,25 @@ const MyEvents = () => {
   const handleDeleteClick = (event) => {
     setEventToDelete(event);
     setDeleteModalOpen(true);
+    setDeleteError(null);
   };
 
   const handleDeleteConfirm = async () => {
     if (!eventToDelete) return;
+
+    setIsDeleting(true);
+    setDeleteError(null);
 
     try {
       await deleteEvent(eventToDelete._id);
       setEvents(events.filter((event) => event._id !== eventToDelete._id));
       setDeleteModalOpen(false);
       setEventToDelete(null);
+      setToast({ message: "Event deleted successfully", type: "success" });
     } catch (err) {
-      alert(err.message || "Failed to delete event");
+      setDeleteError(err.message || "Failed to delete event");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -362,12 +373,26 @@ const MyEvents = () => {
       <DeleteModal
         isOpen={deleteModalOpen}
         onClose={() => {
-          setDeleteModalOpen(false);
-          setEventToDelete(null);
+          if (!isDeleting) {
+            setDeleteModalOpen(false);
+            setEventToDelete(null);
+            setDeleteError(null);
+          }
         }}
         onConfirm={handleDeleteConfirm}
         eventTitle={eventToDelete?.title || ""}
+        isDeleting={isDeleting}
+        error={deleteError}
       />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

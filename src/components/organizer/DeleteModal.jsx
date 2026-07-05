@@ -1,9 +1,16 @@
 import { useEffect } from "react";
 
-const DeleteModal = ({ isOpen, onClose, onConfirm, eventTitle }) => {
+const DeleteModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  eventTitle,
+  isDeleting,
+  error,
+}) => {
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape" && !isDeleting) onClose();
     };
 
     if (isOpen) {
@@ -15,7 +22,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, eventTitle }) => {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, isDeleting]);
 
   if (!isOpen) return null;
 
@@ -24,7 +31,7 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, eventTitle }) => {
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={onClose}
+        onClick={isDeleting ? undefined : onClose}
       />
 
       {/* Modal */}
@@ -49,25 +56,57 @@ const DeleteModal = ({ isOpen, onClose, onConfirm, eventTitle }) => {
             <h3 className="text-lg font-semibold text-white mb-2">
               Delete Event?
             </h3>
-            <p className="text-sm text-zinc-400 leading-relaxed">
-              Are you sure you want to delete "{eventTitle}"? This action cannot
-              be undone.
+            <p className="text-sm text-zinc-400 leading-relaxed mb-3">
+              Are you sure you want to permanently delete "{eventTitle}"? This
+              action cannot be undone.
             </p>
+            {error && (
+              <div className="bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                <p className="text-sm text-rose-500">{error}</p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 h-10 px-4 bg-transparent border border-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-900 transition-colors"
+            disabled={isDeleting}
+            className="flex-1 h-10 px-4 bg-transparent border border-zinc-800 text-white rounded-xl font-medium hover:bg-zinc-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 h-10 px-4 bg-rose-500 text-white rounded-xl font-medium hover:bg-rose-600 transition-colors"
+            disabled={isDeleting}
+            className="flex-1 h-10 px-4 bg-rose-500 text-white rounded-xl font-medium hover:bg-rose-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
           >
-            Delete
+            {isDeleting ? (
+              <>
+                <svg
+                  className="w-4 h-4 animate-spin"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Deleting...
+              </>
+            ) : (
+              "Delete Event"
+            )}
           </button>
         </div>
       </div>

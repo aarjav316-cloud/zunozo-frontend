@@ -11,6 +11,7 @@ import BrowseEvents from "../pages/public/BrowseEvents";
 import EventDetails from "../pages/public/EventDetails";
 import MyEvents from "../pages/organizer/MyEvents";
 import CreateEvent from "../pages/organizer/CreateEvent";
+import EditEvent from "../pages/organizer/EditEvent";
 
 const AppRoutes = () => {
   return (
@@ -21,6 +22,7 @@ const AppRoutes = () => {
         <Route path="/events/:slug" element={<EventDetails />} />
         <Route path="/organizer/events" element={<MyEvents />} />
         <Route path="/organizer/events/:id/preview" element={<EventDetails />} />
+        <Route path="/organizer/events/:id/edit" element={<EditEvent />} />
         <Route path="/organizer/events/create" element={<CreateEvent />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
