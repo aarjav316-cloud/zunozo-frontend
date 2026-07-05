@@ -10,6 +10,7 @@ import ResetPasswordPage from "../pages/auth/ResetPassword";
 import BrowseEvents from "../pages/public/BrowseEvents";
 import EventDetails from "../pages/public/EventDetails";
 import MyEvents from "../pages/organizer/MyEvents";
+import CreateEvent from "../pages/organizer/CreateEvent";
 
 const AppRoutes = () => {
   return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
         <Route path="/events" element={<BrowseEvents />} />
         <Route path="/events/:slug" element={<EventDetails />} />
         <Route path="/organizer/events" element={<MyEvents />} />
+        <Route path="/organizer/events/create" element={<CreateEvent />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/signin" element={<SignInPage />} />
