@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyEvents, deleteEvent } from "../../api/eventApi";
 import MyEventCard from "../../components/organizer/MyEventCard";
+import Dropdown from "../../components/ui/Dropdown";
 
 const MyEvents = () => {
   const navigate = useNavigate();
@@ -187,14 +188,14 @@ const MyEvents = () => {
               />
             </div>
 
-            <select
+            <Dropdown
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="h-10 px-4 bg-[#18181B] border border-zinc-800 rounded-lg text-white text-sm focus:outline-none focus:border-[#6366F1] transition-colors"
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-            </select>
+              onChange={setSortBy}
+              options={[
+                { value: "newest", label: "Newest First" },
+                { value: "oldest", label: "Oldest First" },
+              ]}
+            />
 
             <div className="hidden md:flex items-center gap-2 bg-[#18181B] border border-zinc-800 rounded-lg p-1">
               <button
