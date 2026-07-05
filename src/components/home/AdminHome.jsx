@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPendingEvents } from "../../api/eventApi";
+import { getPendingEvents, getApprovedEvents } from "../../api/eventApi";
 import { useAuth } from "../../context/AuthContext";
 import { formatDate } from "../../utils/helpers";
 
@@ -22,19 +22,47 @@ const AdminHome = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await getPendingEvents();
-      if (response.success && response.events) {
-        const events = response.events;
-        setStats({
-          pending: events.filter((e) => e.status === "PENDING_REVIEW").length,
-          approved: events.filter((e) => e.status === "APPROVED").length,
-          rejected: events.filter((e) => e.status === "REJECTED").length,
-          total: events.length,
-        });
-        setRecentEvents(
-          events.filter((e) => e.status === "PENDING_REVIEW").slice(0, 3),
-        );
+      // Fetch pending events (includes pending, rejected, changes requested)
+      const pendingResponse = await getPendingEvents();
+
+      // Fetch approved events
+      const approvedResponse = await getApprovedEvents();
+
+      let pendingCount = 0;
+      let approvedCount = 0;
+      let rejectedCount = 0;
+      let changesRequestedCount = 0;
+      let recentPending = [];
+
+      if (pendingResponse.success && pendingResponse.events) {
+        const events = pendingResponse.events;
+        pendingCount = events.filter(
+          (e) => e.status === "PENDING_REVIEW",
+        ).length;
+        rejectedCount = events.filter((e) => e.status === "REJECTED").length;
+        changesRequestedCount = events.filter(
+          (e) => e.status === "CHANGES_REQUESTED",
+        ).length;
+        recentPending = events
+          .filter((e) => e.status === "PENDING_REVIEW")
+          .slice(0, 3);
       }
+
+      if (approvedResponse.success && approvedResponse.events) {
+        approvedCount = approvedResponse.events.length;
+      }
+
+      const totalCount =
+        pendingCount + approvedCount + rejectedCount + changesRequestedCount;
+
+      setStats({
+        pending: pendingCount,
+        approved: approvedCount,
+        rejected: rejectedCount,
+        total: totalCount,
+      });
+
+      setRecentEvents(recentPending);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
     } finally {
