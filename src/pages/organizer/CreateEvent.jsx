@@ -4,6 +4,7 @@ import { createEvent } from "../../api/eventApi";
 import FormSection from "../../components/organizer/CreateEvent/FormSection";
 import InputField from "../../components/organizer/CreateEvent/InputField";
 import DatePickerField from "../../components/organizer/CreateEvent/DatePickerField";
+import StateSelector from "../../components/organizer/CreateEvent/StateSelector";
 import CategorySelector from "../../components/organizer/CreateEvent/CategorySelector";
 import TagsInput from "../../components/organizer/CreateEvent/TagsInput";
 import PricingToggle from "../../components/organizer/CreateEvent/PricingToggle";
@@ -380,13 +381,12 @@ const CreateEvent = () => {
                     placeholder="City"
                     required
                   />
-                  <InputField
+                  <StateSelector
                     label="State"
                     name="venue.state"
                     value={formData.venue.state}
                     onChange={handleChange}
                     error={errors["venue.state"]}
-                    placeholder="State"
                     required
                   />
                 </div>
