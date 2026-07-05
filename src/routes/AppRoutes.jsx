@@ -12,6 +12,7 @@ import EventDetails from "../pages/public/EventDetails";
 import MyEvents from "../pages/organizer/MyEvents";
 import CreateEvent from "../pages/organizer/CreateEvent";
 import EditEvent from "../pages/organizer/EditEvent";
+import AdminDashboard from "../pages/admin/AdminDashboard";
 
 const AppRoutes = () => {
   return (
@@ -21,9 +22,13 @@ const AppRoutes = () => {
         <Route path="/events" element={<BrowseEvents />} />
         <Route path="/events/:slug" element={<EventDetails />} />
         <Route path="/organizer/events" element={<MyEvents />} />
-        <Route path="/organizer/events/:id/preview" element={<EventDetails />} />
+        <Route
+          path="/organizer/events/:id/preview"
+          element={<EventDetails />}
+        />
         <Route path="/organizer/events/:id/edit" element={<EditEvent />} />
         <Route path="/organizer/events/create" element={<CreateEvent />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/verify-otp" element={<VerifyOtpPage />} />
         <Route path="/signin" element={<SignInPage />} />
