@@ -227,12 +227,6 @@ const Profile = () => {
           <h2 className="text-xl font-bold text-white mb-6">Account Details</h2>
           <div className="space-y-4">
             <div className="flex justify-between py-3 border-b border-zinc-800">
-              <span className="text-zinc-400">User ID</span>
-              <span className="text-white font-mono text-sm">
-                {user?.id || "N/A"}
-              </span>
-            </div>
-            <div className="flex justify-between py-3 border-b border-zinc-800">
               <span className="text-zinc-400">Full Name</span>
               <span className="text-white">{user?.name}</span>
             </div>

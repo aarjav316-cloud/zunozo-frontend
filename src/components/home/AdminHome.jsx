@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getPendingEvents, getApprovedEvents } from "../../api/eventApi";
 import { useAuth } from "../../context/AuthContext";
 import { formatDate } from "../../utils/helpers";
+import AdminNavbar from "../admin/AdminNavbar";
 
 const AdminHome = () => {
   const navigate = useNavigate();
@@ -72,6 +73,9 @@ const AdminHome = () => {
 
   return (
     <div className="min-h-screen bg-[#09090B]">
+      {/* Admin Navbar */}
+      <AdminNavbar />
+
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Welcome Section */}
         <div className="mb-10">

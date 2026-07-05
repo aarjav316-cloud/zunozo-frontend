@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyEvents } from "../../api/eventApi";
 import { useAuth } from "../../context/AuthContext";
+import OrganizerNavbar from "../organizer/OrganizerNavbar";
 
 const OrganizerHome = () => {
   const navigate = useNavigate();
@@ -41,6 +42,8 @@ const OrganizerHome = () => {
 
   return (
     <div className="min-h-screen bg-[#09090B]">
+      {/* Organizer Navbar */}
+      <OrganizerNavbar />
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Welcome Section */}
         <div className="mb-10">
