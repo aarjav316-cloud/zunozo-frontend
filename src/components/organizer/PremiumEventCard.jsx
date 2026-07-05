@@ -136,7 +136,7 @@ const PremiumEventCard = ({ event, onDelete }) => {
         {/* Action Buttons */}
         <div className="flex gap-2 pt-2">
           <button
-            onClick={() => navigate(`/events/${event.slug}`)}
+            onClick={() => navigate(`/organizer/events/${event._id}/preview`)}
             className="flex-1 h-10 px-3 bg-transparent border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-900 hover:text-white transition-colors text-sm inline-flex items-center justify-center gap-2"
           >
             <svg

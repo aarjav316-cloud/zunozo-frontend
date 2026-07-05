@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getEventBySlug } from "../../api/eventApi";
+import { getEventBySlug, getEventById } from "../../api/eventApi";
 
 const EventDetails = () => {
-  const { slug } = useParams();
+  const { slug, id } = useParams();
   const navigate = useNavigate();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,12 +11,23 @@ const EventDetails = () => {
 
   useEffect(() => {
     const fetchEvent = async () => {
+      console.log("EventDetails params:", { slug, id });
       try {
-        const response = await getEventBySlug(slug);
-        if (response.success && response.event) {
+        let response;
+        if (id) {
+          console.log("Fetching by ID:", id);
+          response = await getEventById(id);
+        } else if (slug) {
+          console.log("Fetching by slug:", slug);
+          response = await getEventBySlug(slug);
+        }
+
+        console.log("Response:", response);
+        if (response?.success && response.event) {
           setEvent(response.event);
         }
       } catch (err) {
+        console.error("EventDetails fetch error:", err);
         setError(err.message || "Failed to load event");
       } finally {
         setLoading(false);
@@ -24,7 +35,7 @@ const EventDetails = () => {
     };
 
     fetchEvent();
-  }, [slug]);
+  }, [slug, id]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
