@@ -169,7 +169,7 @@ const EventCard = ({ event }) => {
               {/* Price with Accent */}
               <div className="flex items-center gap-2">
                 <span
-                  className="text-2xl font-bold text-purple-400 tracking-tight"
+                  className="text-2xl font-bold text-white tracking-tight"
                   style={{ letterSpacing: "-0.03em" }}
                 >
                   {event.isFree ? "Free" : `₹${event.price}`}

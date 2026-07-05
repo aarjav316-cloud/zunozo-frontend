@@ -233,7 +233,7 @@ const BrowseEvents = () => {
                 onClick={() => setSelectedCategory(category)}
                 className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === category
-                    ? "bg-purple-500 text-white"
+                    ? "bg-white text-black"
                     : "bg-zinc-900/50 text-gray-400 border border-white/10 hover:bg-zinc-800 hover:text-white"
                 }`}
               >
