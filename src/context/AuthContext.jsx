@@ -13,7 +13,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       const response = await getCurrentUser();
       if (response.success && response.user) {
-        setUser(response.user);
+        // Fetch full user data including timestamps if not provided
+        setUser({
+          ...response.user,
+          createdAt: response.user.createdAt || new Date().toISOString(),
+        });
       }
     } catch (err) {
       setUser(null);
