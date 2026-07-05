@@ -1,7 +1,31 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getCurrentUser } from "../../api/authApi";
 import heroImage from "../../assets/HEROsection.jpg";
 
 const Hero = () => {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await getCurrentUser();
+        if (response.success && response.user) {
+          setUser(response.user);
+          console.log("User data:", response.user); // Debug log
+          console.log("User role:", response.user.role); // Debug log
+        }
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setAuthLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
   return (
     <section className="min-h-[85vh] flex items-center pt-20 px-4 sm:px-6">
       <div className="max-w-[1300px] mx-auto w-full px-6">
@@ -44,12 +68,26 @@ const Hero = () => {
                   />
                 </svg>
               </Link>
-              <Link
-                to="/organizer"
-                className="inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
-              >
-                Become Organizer
-              </Link>
+
+              {!authLoading && (
+                <>
+                  {user?.role === "organizer" ? (
+                    <Link
+                      to="/organizer/events"
+                      className="inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
+                    >
+                      My Events
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/organizer"
+                      className="inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
+                    >
+                      Become Organizer
+                    </Link>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
