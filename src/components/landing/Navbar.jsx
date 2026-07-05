@@ -98,9 +98,12 @@ const Navbar = () => {
             {authLoading ? (
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
-              <button className="inline-flex items-center justify-center w-10 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm">
+              <Link
+                to="/profile"
+                className="inline-flex items-center justify-center w-10 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
+              >
                 {user.name?.charAt(0).toUpperCase() || "U"}
-              </button>
+              </Link>
             ) : (
               <Link
                 to="/signin"
