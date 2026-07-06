@@ -14,10 +14,13 @@ export const AuthProvider = ({ children }) => {
       const response = await getCurrentUser();
       if (response.success && response.user) {
         // Fetch full user data including timestamps if not provided
-        setUser({
+        const userData = {
           ...response.user,
           createdAt: response.user.createdAt || new Date().toISOString(),
-        });
+        };
+        setUser(userData);
+      } else {
+        setUser(null);
       }
     } catch (err) {
       setUser(null);

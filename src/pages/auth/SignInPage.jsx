@@ -7,9 +7,11 @@ import PasswordInput from "../../components/ui/PasswordInput";
 import Button from "../../components/ui/Button";
 import GoogleButton from "../../components/ui/GoogleButton";
 import { signinUser } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
 
 function SignInPage() {
   const navigate = useNavigate();
+  const { refetchUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,6 +30,8 @@ function SignInPage() {
 
     try {
       await signinUser({ email, password });
+      // Refetch user data to update AuthContext
+      await refetchUser();
       navigate("/");
     } catch (err) {
       setError(err.message || "Login failed");

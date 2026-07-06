@@ -5,11 +5,13 @@ import AuthCard from "../../components/ui/AuthCard";
 import Button from "../../components/ui/Button";
 import OTPInput from "../../components/auth/OTPInput";
 import { verifyOtp, resendOtp } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
 
 function VerifyOtpPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
+  const { refetchUser } = useAuth();
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,7 +38,9 @@ function VerifyOtpPage() {
 
     try {
       await verifyOtp({ email, otp });
-      navigate("/signin");
+      // Refetch user data to update AuthContext
+      await refetchUser();
+      navigate("/");
     } catch (err) {
       setError(err.message || "OTP verification failed");
     } finally {

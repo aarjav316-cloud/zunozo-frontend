@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getCurrentUser } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
-  const [user, setUser] = useState(null);
-  const [authLoading, setAuthLoading] = useState(true);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -14,23 +13,6 @@ const Navbar = () => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await getCurrentUser();
-        if (response.success && response.user) {
-          setUser(response.user);
-        }
-      } catch (error) {
-        setUser(null);
-      } finally {
-        setAuthLoading(false);
-      }
-    };
-
-    checkAuth();
   }, []);
 
   return (

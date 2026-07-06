@@ -8,6 +8,7 @@ const ProtectedRoute = ({
 }) => {
   const { user, loading, role } = useAuth();
 
+  // Show loading spinner while checking authentication
   if (loading) {
     return (
       <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
