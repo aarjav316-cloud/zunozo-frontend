@@ -15,16 +15,12 @@ const Profile = () => {
     try {
       await logoutUser();
       setUser(null);
-      setToast({ message: "Logged out successfully", type: "success" });
-      setTimeout(() => {
-        navigate("/");
-      }, 1000);
+      navigate("/");
     } catch (error) {
       setToast({
         message: error.message || "Logout failed",
         type: "error",
       });
-    } finally {
       setIsLoggingOut(false);
     }
   };
