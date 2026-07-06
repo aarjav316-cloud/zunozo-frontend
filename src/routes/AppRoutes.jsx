@@ -13,6 +13,8 @@ import EventDetails from "../pages/public/EventDetails";
 import MyEvents from "../pages/organizer/MyEvents";
 import CreateEvent from "../pages/organizer/CreateEvent";
 import EditEvent from "../pages/organizer/EditEvent";
+import Dashboard from "../pages/organizer/Dashboard";
+import BecomeOrganizer from "../pages/organizer/BecomeOrganizer";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Profile from "../pages/user/Profile";
 import EditProfile from "../pages/user/EditProfile";
@@ -26,6 +28,15 @@ const AppRoutes = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/events" element={<BrowseEvents />} />
         <Route path="/events/:slug" element={<EventDetails />} />
+        <Route path="/become-organizer" element={<BecomeOrganizer />} />
+        <Route
+          path="/organizer/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/organizer/events"
           element={

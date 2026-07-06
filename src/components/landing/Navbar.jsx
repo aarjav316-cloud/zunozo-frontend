@@ -70,7 +70,7 @@ const Navbar = () => {
               Browse Events
             </Link>
             <Link
-              to="/organizer"
+              to="/become-organizer"
               className="hidden lg:block text-sm font-medium text-zinc-400 hover:text-white transition-colors duration-200"
             >
               Become Organizer

@@ -80,7 +80,7 @@ const Hero = () => {
                     </Link>
                   ) : (
                     <Link
-                      to="/organizer"
+                      to="/become-organizer"
                       className="inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
                     >
                       Become Organizer
