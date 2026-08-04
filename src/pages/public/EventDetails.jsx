@@ -1,33 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEventBySlug, getEventById } from "../../api/eventApi";
+import { createBooking } from "../../api/bookingApi";
+import { useAuth } from "../../context/AuthContext";
+import useRazorpay from "../../hooks/useRazorpay";
+import BookingModal from "../../components/booking/BookingModal";
+import BookingSuccess from "../../components/booking/BookingSuccess";
+import Toast from "../../components/ui/Toast";
 
 const EventDetails = () => {
   const { slug, id } = useParams();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+  const { initiatePayment, isProcessing, paymentStage } = useRazorpay();
+
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Booking state
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [bookingResult, setBookingResult] = useState(null);
+  const [isFreeBooking, setIsFreeBooking] = useState(false);
+  const [toast, setToast] = useState(null);
+
   useEffect(() => {
     const fetchEvent = async () => {
-      console.log("EventDetails params:", { slug, id });
       try {
         let response;
         if (id) {
-          console.log("Fetching by ID:", id);
           response = await getEventById(id);
         } else if (slug) {
-          console.log("Fetching by slug:", slug);
           response = await getEventBySlug(slug);
         }
 
-        console.log("Response:", response);
         if (response?.success && response.event) {
           setEvent(response.event);
         }
       } catch (err) {
-        console.error("EventDetails fetch error:", err);
         setError(err.message || "Failed to load event");
       } finally {
         setLoading(false);
@@ -55,6 +66,147 @@ const EventDetails = () => {
       hour12: true,
     });
   };
+
+  /**
+   * ---------------------------------------------------
+   * Book Now click handler
+   * ---------------------------------------------------
+   * Redirects unauthenticated users to sign in.
+   * Opens BookingModal for authenticated users.
+   */
+  const handleBookNowClick = useCallback(() => {
+    if (!isAuthenticated) {
+      navigate("/signin", { state: { from: window.location.pathname } });
+      return;
+    }
+    setIsBookingModalOpen(true);
+  }, [isAuthenticated, navigate]);
+
+  /**
+   * ---------------------------------------------------
+   * Free event booking handler
+   * ---------------------------------------------------
+   * Calls POST /api/v1/bookings directly.
+   */
+  const handleFreeBooking = useCallback(
+    async (quantity) => {
+      if (!event?._id) return;
+
+      setIsFreeBooking(true);
+
+      try {
+        const response = await createBooking(event._id, quantity);
+
+        if (response.success) {
+          setIsBookingModalOpen(false);
+          setBookingResult({
+            booking: response.data,
+            event: response.data.event || {
+              title: event.title,
+              startDate: event.startDate,
+              venue: event.venue,
+            },
+          });
+          setIsSuccessModalOpen(true);
+
+          // Refresh event data to update ticketsSold count
+          try {
+            let refreshResponse;
+            if (id) {
+              refreshResponse = await getEventById(id);
+            } else if (slug) {
+              refreshResponse = await getEventBySlug(slug);
+            }
+            if (refreshResponse?.success && refreshResponse.event) {
+              setEvent(refreshResponse.event);
+            }
+          } catch {
+            // Silent — non-critical refresh
+          }
+        }
+      } catch (err) {
+        setToast({
+          message: err.message || "Unable to complete booking. Please try again.",
+          type: "error",
+        });
+      } finally {
+        setIsFreeBooking(false);
+      }
+    },
+    [event, id, slug]
+  );
+
+  /**
+   * ---------------------------------------------------
+   * Paid event booking handler
+   * ---------------------------------------------------
+   * Creates Razorpay order → Opens checkout → Verifies payment.
+   * Booking is ONLY created after successful payment verification.
+   */
+  const handlePaidBooking = useCallback(
+    (quantity) => {
+      if (!event?._id) return;
+
+      initiatePayment({
+        eventId: event._id,
+        quantity,
+        eventDetails: {
+          title: event.title,
+        },
+        user: {
+          name: user?.name,
+          email: user?.email,
+        },
+        onSuccess: async (data) => {
+          setIsBookingModalOpen(false);
+          setBookingResult({
+            booking: data.booking,
+            event: data.event || {
+              title: event.title,
+              startDate: event.startDate,
+              venue: event.venue,
+            },
+          });
+          setIsSuccessModalOpen(true);
+
+          // Refresh event data to update ticketsSold count
+          try {
+            let refreshResponse;
+            if (id) {
+              refreshResponse = await getEventById(id);
+            } else if (slug) {
+              refreshResponse = await getEventBySlug(slug);
+            }
+            if (refreshResponse?.success && refreshResponse.event) {
+              setEvent(refreshResponse.event);
+            }
+          } catch {
+            // Silent — non-critical refresh
+          }
+        },
+        onError: (message) => {
+          setToast({
+            message: message || "Payment failed. Please try again.",
+            type: "error",
+          });
+        },
+        onDismiss: () => {
+          // User closed checkout — no action needed
+        },
+      });
+    },
+    [event, user, initiatePayment, id, slug]
+  );
+
+  /**
+   * ---------------------------------------------------
+   * Success modal close handler
+   * ---------------------------------------------------
+   */
+  const handleSuccessClose = useCallback(() => {
+    setIsSuccessModalOpen(false);
+    setBookingResult(null);
+  }, []);
 
   if (loading) {
     return (
@@ -88,6 +240,11 @@ const EventDetails = () => {
       </div>
     );
   }
+
+  // Availability calculations
+  const availableTickets = event.capacity - (event.ticketsSold || 0);
+  const isSoldOut = availableTickets <= 0;
+  const isEventStarted = new Date() >= new Date(event.startDate);
 
   return (
     <div className="min-h-screen bg-[#09090B]">
@@ -359,24 +516,65 @@ const EventDetails = () => {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Capacity</span>
+                  <span className="text-gray-400">Available</span>
                   <span className="text-white font-medium">
-                    {event.capacity} people
+                    {isSoldOut
+                      ? "Sold Out"
+                      : `${availableTickets} / ${event.capacity}`}
                   </span>
                 </div>
               </div>
 
-              <button className="w-full py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-100 transition-colors">
-                Book Now
+              <button
+                onClick={handleBookNowClick}
+                disabled={isSoldOut || isEventStarted}
+                className="w-full py-4 bg-white text-black rounded-full font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSoldOut
+                  ? "Sold Out"
+                  : isEventStarted
+                  ? "Event Started"
+                  : "Book Now"}
               </button>
 
-              <p className="text-center text-sm text-gray-500">
-                Booking functionality coming soon
-              </p>
+              {!isSoldOut && !isEventStarted && (
+                <p className="text-center text-sm text-gray-500">
+                  {event.isFree
+                    ? "Free — No payment required"
+                    : "Secure payment via Razorpay"}
+                </p>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Booking Modal */}
+      <BookingModal
+        isOpen={isBookingModalOpen}
+        onClose={() => !isProcessing && !isFreeBooking && setIsBookingModalOpen(false)}
+        event={event}
+        isProcessing={isProcessing || isFreeBooking}
+        paymentStage={isFreeBooking ? "creating-order" : paymentStage}
+        onBookFree={handleFreeBooking}
+        onBookPaid={handlePaidBooking}
+      />
+
+      {/* Success Modal */}
+      <BookingSuccess
+        isOpen={isSuccessModalOpen}
+        onClose={handleSuccessClose}
+        bookingData={bookingResult}
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

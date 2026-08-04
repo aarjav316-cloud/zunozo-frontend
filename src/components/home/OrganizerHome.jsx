@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyEvents } from "../../api/eventApi";
+import { getOrganizerProfile } from "../../api/organizerApi";
 import { useAuth } from "../../context/AuthContext";
 import OrganizerNavbar from "../organizer/OrganizerNavbar";
 
 const OrganizerHome = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [organizerData, setOrganizerData] = useState(null);
   const [stats, setStats] = useState({
     total: 0,
     approved: 0,
@@ -22,9 +24,18 @@ const OrganizerHome = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await getMyEvents();
-      if (response.success && response.events) {
-        const events = response.events;
+      // Fetch organizer profile and events in parallel
+      const [profileResponse, eventsResponse] = await Promise.all([
+        getOrganizerProfile(),
+        getMyEvents(),
+      ]);
+
+      if (profileResponse.success && profileResponse.data) {
+        setOrganizerData(profileResponse.data);
+      }
+
+      if (eventsResponse.success && eventsResponse.events) {
+        const events = eventsResponse.events;
         setStats({
           total: events.length,
           approved: events.filter((e) => e.status === "APPROVED").length,
@@ -54,7 +65,10 @@ const OrganizerHome = () => {
               letterSpacing: "-0.03em",
             }}
           >
-            Welcome back, {user?.fullname?.split(" ")[0] || "Organizer"}
+            Welcome back,{" "}
+            {organizerData?.organizer?.organizerName?.split(" ")[0] ||
+              user?.name?.split(" ")[0] ||
+              "Organizer"}
           </h1>
           <p className="text-zinc-500 text-lg">
             Manage your events and create amazing experiences

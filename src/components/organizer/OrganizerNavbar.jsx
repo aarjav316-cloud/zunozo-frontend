@@ -54,7 +54,7 @@ const OrganizerNavbar = () => {
 
             {/* Profile Avatar */}
             <Link
-              to="/profile"
+              to="/profile/organizer"
               className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center hover:scale-105 transition-transform"
             >
               <span className="text-sm font-bold text-white">

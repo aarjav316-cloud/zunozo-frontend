@@ -6,13 +6,21 @@ import Toast from "../../components/ui/Toast";
 
 const EditProfile = () => {
   const navigate = useNavigate();
-  const { user, refetchUser } = useAuth();
+  const { user, refetchUser, role, loading } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
   });
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
   const [toast, setToast] = useState(null);
+
+  // Redirect organizers to their specific edit profile page
+  useEffect(() => {
+    if (!loading && role === "organizer") {
+      navigate("/profile/organizer/edit", { replace: true });
+      return;
+    }
+  }, [role, loading, navigate]);
 
   useEffect(() => {
     if (user) {
@@ -49,7 +57,7 @@ const EditProfile = () => {
 
     if (!validate()) return;
 
-    setLoading(true);
+    setSubmitLoading(true);
     try {
       const response = await updateProfile(formData);
       if (response.success) {
@@ -65,7 +73,7 @@ const EditProfile = () => {
         type: "error",
       });
     } finally {
-      setLoading(false);
+      setSubmitLoading(false);
     }
   };
 
@@ -119,7 +127,7 @@ const EditProfile = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  disabled={loading}
+                  disabled={submitLoading}
                   className={`w-full h-12 px-4 bg-zinc-900 border ${
                     errors.name ? "border-rose-500" : "border-zinc-800"
                   } rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -192,7 +200,7 @@ const EditProfile = () => {
                 disabled={loading}
                 className="flex-1 h-12 px-4 bg-white text-black rounded-xl font-medium hover:bg-zinc-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
               >
-                {loading ? (
+                {submitLoading ? (
                   <>
                     <svg
                       className="w-5 h-5 animate-spin"

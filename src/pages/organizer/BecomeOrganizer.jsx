@@ -6,7 +6,14 @@ import Toast from "../../components/ui/Toast";
 
 const BecomeOrganizer = () => {
   const navigate = useNavigate();
-  const { user, role, loading: authLoading, refetchUser, isAuthenticated } = useAuth();
+  const {
+    user,
+    role,
+    loading: authLoading,
+    refetchUser,
+    isAuthenticated,
+    setUser,
+  } = useAuth();
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
 
@@ -25,7 +32,7 @@ const BecomeOrganizer = () => {
       if (!isAuthenticated) {
         navigate("/signin?redirect=/become-organizer");
       } else if (role === "organizer") {
-        navigate("/organizer/dashboard");
+        navigate("/"); // Redirect to home instead of /organizer/dashboard
       }
     }
   }, [isAuthenticated, role, authLoading, navigate]);
@@ -40,9 +47,10 @@ const BecomeOrganizer = () => {
     if (!formData.about.trim()) {
       newErrors.about = "About section is required";
     }
-    
+
     // Simple URL validation if provided
-    const urlRegex = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+    const urlRegex =
+      /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
     if (formData.instagram && !urlRegex.test(formData.instagram)) {
       newErrors.instagram = "Must be a valid URL";
     }
@@ -66,7 +74,10 @@ const BecomeOrganizer = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      setToast({ type: "error", message: "Please fix all validation errors before submitting" });
+      setToast({
+        type: "error",
+        message: "Please fix all validation errors before submitting",
+      });
       return;
     }
 
@@ -75,13 +86,18 @@ const BecomeOrganizer = () => {
     try {
       const resp = await becomeOrganizer(formData);
       if (resp.success) {
-        setToast({ type: "success", message: "Welcome aboard! Preparing your dashboard..." });
-        // Refresh auth state to get the new role immediately
-        await refetchUser();
-        // Redirect to dashboard
+        setToast({
+          type: "success",
+          message: "Welcome aboard! Redirecting to your dashboard...",
+        });
+
+        // Update user role immediately in the context
+        setUser({ ...user, role: "organizer" });
+
+        // Wait for React to process the state update, then navigate
         setTimeout(() => {
-          navigate("/organizer/dashboard");
-        }, 1500);
+          navigate("/", { replace: true });
+        }, 1000);
       }
     } catch (error) {
       if (error.message) {
@@ -90,19 +106,31 @@ const BecomeOrganizer = () => {
       if (error.errors) {
         setErrors(error.errors);
       }
-    } finally {
-      if (!toast || toast.type !== "success") {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
   if (authLoading) {
     return (
       <div className="min-h-screen bg-[#09090B] flex items-center justify-center">
-        <svg className="w-8 h-8 animate-spin text-[#6366F1]" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <svg
+          className="w-8 h-8 animate-spin text-[#6366F1]"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
         </svg>
       </div>
     );
@@ -113,28 +141,41 @@ const BecomeOrganizer = () => {
 
   return (
     <div className="min-h-screen bg-[#09090B] pb-12 font-geist">
-      {toast && <Toast type={toast.type} message={toast.message} onClose={() => setToast(null)} />}
-      
+      {toast && (
+        <Toast
+          type={toast.type}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
       {/* Header Section */}
       <div className="bg-[#09090B] border-b border-zinc-800 sticky top-0 z-40">
         <div className="max-w-3xl mx-auto px-6 h-20 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-white tracking-tight">Become an Organizer</h1>
-            <p className="text-sm text-zinc-400 mt-1">Host events, manage tickets, and grow your audience.</p>
+            <h1 className="text-2xl font-semibold text-white tracking-tight">
+              Become an Organizer
+            </h1>
+            <p className="text-sm text-zinc-400 mt-1">
+              Host events, manage tickets, and grow your audience.
+            </p>
           </div>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 mt-8">
         <form onSubmit={handleSubmit} className="space-y-8">
-          
           {/* Basic Information Section */}
           <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-6">
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-white mb-1">Organizer Profile</h3>
-              <p className="text-sm text-zinc-500">Provide the contact information people will see.</p>
+              <h3 className="text-lg font-semibold text-white mb-1">
+                Organizer Profile
+              </h3>
+              <p className="text-sm text-zinc-500">
+                Provide the contact information people will see.
+              </p>
             </div>
-            
+
             <div className="space-y-5">
               {/* Readonly Identity */}
               <div className="space-y-2">
@@ -147,7 +188,10 @@ const BecomeOrganizer = () => {
                   </div>
                   {user?.name || "Loading..."}
                 </div>
-                <p className="text-xs text-zinc-600 mt-1">Your display name will automatically update if you change your user profile.</p>
+                <p className="text-xs text-zinc-600 mt-1">
+                  Your display name will automatically update if you change your
+                  user profile.
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -166,7 +210,9 @@ const BecomeOrganizer = () => {
                   }`}
                   placeholder="Your contact number"
                 />
-                {errors.phone && <p className="text-sm text-rose-500">{errors.phone}</p>}
+                {errors.phone && (
+                  <p className="text-sm text-rose-500">{errors.phone}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -185,7 +231,9 @@ const BecomeOrganizer = () => {
                   }`}
                   placeholder="Tell us about the events you host..."
                 />
-                {errors.about && <p className="text-sm text-rose-500">{errors.about}</p>}
+                {errors.about && (
+                  <p className="text-sm text-rose-500">{errors.about}</p>
+                )}
               </div>
             </div>
           </div>
@@ -193,10 +241,14 @@ const BecomeOrganizer = () => {
           {/* Optional Social Section */}
           <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-6">
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-white mb-1">Social Presences</h3>
-              <p className="text-sm text-zinc-500">Links where attendees can discover your brand (Optional).</p>
+              <h3 className="text-lg font-semibold text-white mb-1">
+                Social Presences
+              </h3>
+              <p className="text-sm text-zinc-500">
+                Links where attendees can discover your brand (Optional).
+              </p>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-zinc-300">
@@ -213,7 +265,9 @@ const BecomeOrganizer = () => {
                   }`}
                   placeholder="https://instagram.com/..."
                 />
-                {errors.instagram && <p className="text-sm text-rose-500">{errors.instagram}</p>}
+                {errors.instagram && (
+                  <p className="text-sm text-rose-500">{errors.instagram}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -231,7 +285,9 @@ const BecomeOrganizer = () => {
                   }`}
                   placeholder="https://yourwebsite.com"
                 />
-                {errors.website && <p className="text-sm text-rose-500">{errors.website}</p>}
+                {errors.website && (
+                  <p className="text-sm text-rose-500">{errors.website}</p>
+                )}
               </div>
             </div>
           </div>
@@ -243,9 +299,24 @@ const BecomeOrganizer = () => {
               className="px-8 py-3.5 text-[15px] font-medium text-white bg-[#6366F1] hover:bg-[#5558E6] rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.2)] hover:shadow-[0_0_25px_rgba(99,102,241,0.3)] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               {loading && (
-                <svg className="w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <svg
+                  className="w-5 h-5 animate-spin text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               )}
               {loading ? "Registering..." : "Become Organizer"}

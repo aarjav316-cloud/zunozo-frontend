@@ -13,8 +13,9 @@ import EventDetails from "../pages/public/EventDetails";
 import MyEvents from "../pages/organizer/MyEvents";
 import CreateEvent from "../pages/organizer/CreateEvent";
 import EditEvent from "../pages/organizer/EditEvent";
-import Dashboard from "../pages/organizer/Dashboard";
 import BecomeOrganizer from "../pages/organizer/BecomeOrganizer";
+import OrganizerProfile from "../pages/organizer/OrganizerProfile";
+import EditOrganizerProfile from "../pages/organizer/EditOrganizerProfile";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Profile from "../pages/user/Profile";
 import EditProfile from "../pages/user/EditProfile";
@@ -29,14 +30,6 @@ const AppRoutes = () => {
         <Route path="/events" element={<BrowseEvents />} />
         <Route path="/events/:slug" element={<EventDetails />} />
         <Route path="/become-organizer" element={<BecomeOrganizer />} />
-        <Route
-          path="/organizer/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["organizer"]}>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
         <Route
           path="/organizer/events"
           element={
@@ -66,6 +59,22 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedRoles={["organizer"]}>
               <CreateEvent />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/organizer"
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <OrganizerProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/organizer/edit"
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <EditOrganizerProfile />
             </ProtectedRoute>
           }
         />

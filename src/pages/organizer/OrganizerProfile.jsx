@@ -1,22 +1,38 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { getOrganizerProfile } from "../../api/organizerApi";
 import { logoutUser } from "../../api/authApi";
+import { useAuth } from "../../context/AuthContext";
 import Toast from "../../components/ui/Toast";
 
-const Profile = () => {
+const OrganizerProfile = () => {
   const navigate = useNavigate();
-  const { user, loading, setUser, role } = useAuth();
+  const { setUser } = useAuth();
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Redirect organizers to their specific profile page
   useEffect(() => {
-    if (!loading && role === "organizer") {
-      navigate("/profile/organizer", { replace: true });
-      return;
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const response = await getOrganizerProfile();
+      if (response.success && response.data) {
+        setProfileData(response.data);
+      }
+    } catch (error) {
+      setToast({
+        message: error.message || "Failed to load profile",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
     }
-  }, [role, loading, navigate]);
+  };
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -50,15 +66,6 @@ const Profile = () => {
     });
   };
 
-  const getRoleBadge = (role) => {
-    const badges = {
-      admin: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-      organizer: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-      user: "bg-zinc-500/10 text-zinc-400 border-zinc-500/20",
-    };
-    return badges[role] || badges.user;
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#09090B]">
@@ -78,6 +85,8 @@ const Profile = () => {
       </div>
     );
   }
+
+  const { user, organizer } = profileData || {};
 
   return (
     <div className="min-h-screen bg-[#09090B]">
@@ -100,7 +109,7 @@ const Profile = () => {
               d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
             />
           </svg>
-          Back to Home
+          Back to Dashboard
         </button>
 
         {/* Profile Header */}
@@ -121,6 +130,21 @@ const Profile = () => {
                   </span>
                 </div>
               )}
+              {organizer?.isVerified && (
+                <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-blue-500 border-4 border-[#18181B] flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+              )}
             </div>
 
             {/* Info */}
@@ -134,12 +158,12 @@ const Profile = () => {
                       letterSpacing: "-0.02em",
                     }}
                   >
-                    {user?.name}
+                    {organizer?.organizerName}
                   </h1>
                   <p className="text-zinc-400">{user?.email}</p>
                 </div>
                 <button
-                  onClick={() => navigate("/profile/edit")}
+                  onClick={() => navigate("/profile/organizer/edit")}
                   className="px-4 py-2 bg-white text-black rounded-lg font-medium hover:bg-zinc-100 transition-colors self-start"
                 >
                   Edit Profile
@@ -147,11 +171,14 @@ const Profile = () => {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <div
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium border ${getRoleBadge(user?.role)}`}
-                >
-                  {user?.role?.toUpperCase()}
+                <div className="px-3 py-1.5 bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded-lg text-sm font-medium">
+                  ORGANIZER
                 </div>
+                {organizer?.isVerified && (
+                  <div className="px-3 py-1.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-lg text-sm font-medium">
+                    VERIFIED
+                  </div>
+                )}
                 <div className="px-3 py-1.5 bg-zinc-900 border border-zinc-800 rounded-lg text-sm text-zinc-400">
                   Member since {formatDate(user?.createdAt)}
                 </div>
@@ -226,9 +253,11 @@ const Profile = () => {
           </button>
         </div>
 
-        {/* Account Details */}
-        <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-8">
-          <h2 className="text-xl font-bold text-white mb-6">Account Details</h2>
+        {/* User Information */}
+        <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-8 mb-6">
+          <h2 className="text-xl font-bold text-white mb-6">
+            Account Information
+          </h2>
           <div className="space-y-4">
             <div className="flex justify-between py-3 border-b border-zinc-800">
               <span className="text-zinc-400">Full Name</span>
@@ -248,6 +277,75 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
+        {/* Organizer Information */}
+        <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-8">
+          <h2 className="text-xl font-bold text-white mb-6">
+            Organizer Information
+          </h2>
+          <div className="space-y-4">
+            <div className="flex justify-between py-3 border-b border-zinc-800">
+              <span className="text-zinc-400">Organizer Name</span>
+              <span className="text-white">{organizer?.organizerName}</span>
+            </div>
+            <div className="flex justify-between py-3 border-b border-zinc-800">
+              <span className="text-zinc-400">Phone Number</span>
+              <span className="text-white">{organizer?.phone || "N/A"}</span>
+            </div>
+            <div className="flex justify-between py-3 border-b border-zinc-800">
+              <span className="text-zinc-400">Instagram</span>
+              {organizer?.instagram ? (
+                <a
+                  href={organizer.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  View Profile →
+                </a>
+              ) : (
+                <span className="text-zinc-500">Not provided</span>
+              )}
+            </div>
+            <div className="flex justify-between py-3 border-b border-zinc-800">
+              <span className="text-zinc-400">Website</span>
+              {organizer?.website ? (
+                <a
+                  href={organizer.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  Visit Website →
+                </a>
+              ) : (
+                <span className="text-zinc-500">Not provided</span>
+              )}
+            </div>
+            <div className="flex justify-between py-3 border-b border-zinc-800">
+              <span className="text-zinc-400">Verification Status</span>
+              <span
+                className={`${organizer?.isVerified ? "text-emerald-500" : "text-amber-500"}`}
+              >
+                {organizer?.isVerified ? "Verified" : "Not Verified"}
+              </span>
+            </div>
+            <div className="flex justify-between py-3">
+              <span className="text-zinc-400">Organizer Since</span>
+              <span className="text-white">
+                {formatDate(organizer?.createdAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* About Section */}
+          {organizer?.about && (
+            <div className="mt-6 pt-6 border-t border-zinc-800">
+              <h3 className="text-sm font-medium text-zinc-400 mb-3">About</h3>
+              <p className="text-white leading-relaxed">{organizer.about}</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Toast */}
@@ -262,4 +360,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default OrganizerProfile;
