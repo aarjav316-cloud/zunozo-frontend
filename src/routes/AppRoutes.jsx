@@ -20,6 +20,8 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import Profile from "../pages/user/Profile";
 import EditProfile from "../pages/user/EditProfile";
 import Security from "../pages/user/Security";
+import MyBookings from "../pages/user/MyBookings";
+import BookingDetails from "../pages/user/BookingDetails";
 import ProtectedRoute from "../components/auth/ProtectedRoute";
 
 const AppRoutes = () => {
@@ -107,6 +109,22 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Security />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bookings"
+          element={
+            <ProtectedRoute>
+              <MyBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bookings/:bookingId"
+          element={
+            <ProtectedRoute>
+              <BookingDetails />
             </ProtectedRoute>
           }
         />
