@@ -46,6 +46,12 @@ const OrganizerNavbar = () => {
               Create Event
             </Link>
             <Link
+              to="/organizer/scan-tickets"
+              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
+              Scan Tickets
+            </Link>
+            <Link
               to="/events"
               className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
             >

@@ -110,3 +110,43 @@ export const cancelBooking = async (bookingId) => {
     );
   }
 };
+
+/**
+ * Get Event Bookings (Organizer/Admin)
+ * GET /api/v1/bookings/event/:eventId
+ * 
+ * Retrieves bookings and statistics for a specific event.
+ */
+export const getEventBookings = async (eventId, params = {}) => {
+  try {
+    const response = await axiosInstance.get(`/bookings/event/${eventId}`, {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        success: false,
+        message: "Unable to retrieve event bookings.",
+      }
+    );
+  }
+};
+
+/**
+ * Check-In Attendee
+ * POST /api/v1/bookings/checkin/:ticketCode
+ */
+export const checkInBooking = async (ticketCode) => {
+  try {
+    const response = await axiosInstance.post(`/bookings/checkin/${ticketCode}`);
+    return response.data;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        success: false,
+        message: "Unable to check in attendee.",
+      }
+    );
+  }
+};

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useSocket } from "../../context/SocketContext";
 import { getMyBookings } from "../../api/bookingApi";
 import BookingCard from "../../components/booking/BookingCard";
 import BookingCardSkeleton from "../../components/booking/BookingCardSkeleton";
@@ -146,6 +147,36 @@ const MyBookings = () => {
   useEffect(() => {
     fetchBookings(1);
   }, [fetchBookings]);
+
+  /**
+   * ---------------------------------------------------
+   * Real-time booking listener (Socket.io)
+   * ---------------------------------------------------
+   * Refetch the booking list when a new booking is confirmed.
+   */
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleBookingConfirmed = (data) => {
+      // Refetch if the user is on the "upcoming" tab
+      if (activeTab === "upcoming") {
+        fetchBookings(1);
+      }
+
+      setToast({
+        message: `Booking confirmed! ${data.quantity} ticket(s) for ${data.eventTitle || "an event"}`,
+        type: "success",
+      });
+    };
+
+    socket.on("booking:confirmed", handleBookingConfirmed);
+
+    return () => {
+      socket.off("booking:confirmed", handleBookingConfirmed);
+    };
+  }, [socket, activeTab, fetchBookings]);
 
   /**
    * ---------------------------------------------------

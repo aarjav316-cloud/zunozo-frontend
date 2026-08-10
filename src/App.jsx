@@ -1,11 +1,14 @@
 import React from "react";
 import AppRoutes from "./routes/AppRoutes";
 import { AuthProvider } from "./context/AuthContext";
+import { SocketProvider } from "./context/SocketContext";
 
 function App() {
   return (
     <AuthProvider>
-      <AppRoutes />
+      <SocketProvider>
+        <AppRoutes />
+      </SocketProvider>
     </AuthProvider>
   );
 }

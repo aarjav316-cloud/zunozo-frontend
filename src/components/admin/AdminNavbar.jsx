@@ -39,6 +39,12 @@ const AdminNavbar = () => {
               Pending Reviews
             </Link>
             <Link
+              to="/admin/organizers"
+              className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
+              Organizers
+            </Link>
+            <Link
               to="/events"
               className="text-sm font-medium text-zinc-400 hover:text-white transition-colors"
             >

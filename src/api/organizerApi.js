@@ -44,3 +44,18 @@ export const becomeOrganizer = async (data) => {
     );
   }
 };
+
+// Get organizer dashboard statistics
+export const getDashboardStats = async () => {
+  try {
+    const response = await axiosInstance.get("/organizers/dashboard-stats");
+    return response.data;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        success: false,
+        message: "Something went wrong",
+      }
+    );
+  }
+};

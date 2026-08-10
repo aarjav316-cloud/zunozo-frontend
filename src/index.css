@@ -126,3 +126,40 @@ html {
 .react-datepicker-wrapper {
   width: 100%;
 }
+
+/* QR Scanner (html5-qrcode) dark theme overrides */
+#qr-reader {
+  border: none !important;
+  background: #09090B !important;
+}
+
+#qr-reader video {
+  border-radius: 0.75rem;
+}
+
+#qr-reader__scan_region {
+  min-height: 300px;
+}
+
+#qr-reader__dashboard {
+  display: none !important;
+}
+
+/* Scale-in animation for check-in result */
+@keyframes scale-in {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out forwards;
+}

@@ -134,10 +134,10 @@ const PremiumEventCard = ({ event, onDelete }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 pt-2">
+        <div className="grid grid-cols-2 gap-2 pt-2">
           <button
             onClick={() => navigate(`/organizer/events/${event._id}/preview`)}
-            className="flex-1 h-10 px-3 bg-transparent border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-900 hover:text-white transition-colors text-sm inline-flex items-center justify-center gap-2"
+            className="h-10 px-3 bg-transparent border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-900 hover:text-white transition-colors text-sm inline-flex items-center justify-center gap-2"
           >
             <svg
               className="w-4 h-4"
@@ -157,11 +157,28 @@ const PremiumEventCard = ({ event, onDelete }) => {
                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            View
+            Preview
           </button>
+          
+          <button
+            onClick={() => navigate(`/organizer/events/${event._id}/bookings`)}
+            className="h-10 px-3 bg-white text-black rounded-xl font-medium hover:bg-zinc-200 transition-colors text-sm inline-flex items-center justify-center gap-2"
+          >
+            <svg 
+              className="w-4 h-4" 
+              fill="none" 
+              strokeWidth="2" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            Bookings
+          </button>
+
           <button
             onClick={() => navigate(`/organizer/events/${event._id}/edit`)}
-            className="flex-1 h-10 px-3 bg-transparent border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-900 hover:text-white transition-colors text-sm inline-flex items-center justify-center gap-2"
+            className="h-10 px-3 bg-transparent border border-zinc-800 text-zinc-300 rounded-xl font-medium hover:bg-zinc-900 hover:text-white transition-colors text-sm inline-flex items-center justify-center gap-2"
           >
             <svg
               className="w-4 h-4"
@@ -178,6 +195,7 @@ const PremiumEventCard = ({ event, onDelete }) => {
             </svg>
             Edit
           </button>
+          
           <button
             onClick={() => onDelete(event)}
             className="h-10 px-3 bg-transparent border border-rose-900/50 text-rose-400 rounded-xl font-medium hover:bg-rose-500/10 hover:border-rose-500/50 transition-colors text-sm inline-flex items-center justify-center gap-2"

@@ -16,7 +16,12 @@ import EditEvent from "../pages/organizer/EditEvent";
 import BecomeOrganizer from "../pages/organizer/BecomeOrganizer";
 import OrganizerProfile from "../pages/organizer/OrganizerProfile";
 import EditOrganizerProfile from "../pages/organizer/EditOrganizerProfile";
+import OrganizerDashboard from "../pages/organizer/Dashboard";
+import EventBookings from "../pages/organizer/EventBookings";
+import ScanTickets from "../pages/organizer/ScanTickets";
 import AdminDashboard from "../pages/admin/AdminDashboard";
+import Organizers from "../pages/admin/Organizers";
+import OrganizerDetails from "../pages/admin/OrganizerDetails";
 import Profile from "../pages/user/Profile";
 import EditProfile from "../pages/user/EditProfile";
 import Security from "../pages/user/Security";
@@ -33,10 +38,34 @@ const AppRoutes = () => {
         <Route path="/events/:slug" element={<EventDetails />} />
         <Route path="/become-organizer" element={<BecomeOrganizer />} />
         <Route
+          path="/organizer/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <OrganizerDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/organizer/events"
           element={
             <ProtectedRoute allowedRoles={["organizer"]}>
               <MyEvents />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer/events/:eventId/bookings"
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <EventBookings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/organizer/scan-tickets"
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <ScanTickets />
             </ProtectedRoute>
           }
         />
@@ -85,6 +114,22 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute allowedRoles={["admin"]}>
               <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/organizers"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <Organizers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/organizers/:organizerId"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <OrganizerDetails />
             </ProtectedRoute>
           }
         />

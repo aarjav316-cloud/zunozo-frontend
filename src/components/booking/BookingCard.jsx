@@ -249,6 +249,22 @@ const BookingCard = ({ booking, onCancelled, onViewDetails }) => {
 
               {/* Action buttons */}
               <div className="flex items-center gap-2 shrink-0">
+                {booking.bookingStatus === "CONFIRMED" &&
+                  booking.paymentStatus === "PAID" &&
+                  booking.ticketCode &&
+                  booking.ticketStatus !== "CANCELLED" && (
+                    <button
+                      onClick={() =>
+                        navigate(`/bookings/${booking.bookingId}`)
+                      }
+                      className="px-4 py-2 bg-[#6366F1] text-white rounded-lg text-sm font-semibold hover:bg-[#5558E6] transition-colors flex items-center gap-1.5"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                      </svg>
+                      View Ticket
+                    </button>
+                  )}
                 <button
                   onClick={onViewDetails}
                   className="px-4 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-zinc-100 transition-colors"

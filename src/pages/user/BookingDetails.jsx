@@ -13,9 +13,9 @@ import Toast from "../../components/ui/Toast";
  * - Booking info card
  * - Event details section
  * - Ticket code display
- * - Status badges
+ * - QR Code display (QR Ticket System)
+ * - Ticket status badges
  * - Cancel action
- * - Future-ready layout for QR, Invoice, etc.
  *
  * Design: Uses the existing detail page pattern
  * from EventDetails.jsx (bg-[#09090B], max-w-5xl).
@@ -129,6 +129,19 @@ const BookingDetails = () => {
     return badges[status] || badges.UNPAID;
   };
 
+  const getTicketStatusStyle = (status) => {
+    switch (status) {
+      case "VALID":
+        return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+      case "USED":
+        return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+      case "CANCELLED":
+        return "bg-rose-500/10 text-rose-400 border-rose-500/20";
+      default:
+        return "bg-zinc-500/10 text-zinc-400 border-zinc-500/20";
+    }
+  };
+
   /**
    * ---------------------------------------------------
    * Handle cancel success
@@ -232,6 +245,11 @@ const BookingDetails = () => {
     !bookingData.checkedIn &&
     event &&
     new Date(event.startDate) > new Date();
+
+  const isTicketEligible =
+    bookingData.bookingStatus === "CONFIRMED" &&
+    bookingData.paymentStatus === "PAID" &&
+    bookingData.ticketCode;
 
   return (
     <div className="min-h-screen bg-[#09090B]">
@@ -462,6 +480,16 @@ const BookingDetails = () => {
                     {bookingData.ticketCode}
                   </span>
                 </div>
+                {bookingData.ticketStatus && (
+                  <div className="flex justify-between items-center py-3 border-b border-zinc-800">
+                    <span className="text-zinc-400">Ticket Status</span>
+                    <span
+                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold border ${getTicketStatusStyle(bookingData.ticketStatus)}`}
+                    >
+                      {bookingData.ticketStatus}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between py-3 border-b border-zinc-800">
                   <span className="text-zinc-400">Tickets</span>
                   <span className="text-white">{bookingData.quantity}</span>
@@ -512,32 +540,106 @@ const BookingDetails = () => {
                 )}
               </div>
             </div>
-
-            {/* Future sections placeholder: QR Code, Invoice, etc. */}
-            {/* These sections can be added without restructuring. */}
           </div>
 
-          {/* Right Column — Ticket Card + Actions */}
+          {/* Right Column — Ticket Card + QR + Actions */}
           <div className="space-y-6">
-            {/* Ticket Code Card */}
+            {/* QR Ticket Card */}
             <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-6">
               <h3 className="text-sm font-medium text-zinc-400 mb-4">
                 Your Ticket
               </h3>
-              <div className="bg-zinc-900 rounded-xl p-6 text-center border border-white/5">
-                <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">
-                  Ticket Code
-                </p>
-                <p
-                  className="text-3xl font-bold text-white tracking-[0.2em] font-mono"
-                  style={{ letterSpacing: "0.2em" }}
-                >
-                  {bookingData.ticketCode}
-                </p>
-                <p className="text-xs text-zinc-500 mt-3">
-                  Show this at the venue for check-in
-                </p>
-              </div>
+
+              {/* =============================================
+                  QR Code Display (QR Ticket System - Step 4)
+                  ============================================= */}
+              {isTicketEligible && bookingData.qrCode ? (
+                <div className="space-y-4">
+                  {/* QR Code */}
+                  <div className="bg-white rounded-xl p-4 flex items-center justify-center">
+                    <img
+                      src={bookingData.qrCode}
+                      alt="Ticket QR Code"
+                      className="w-56 h-56 object-contain"
+                    />
+                  </div>
+
+                  {/* Ticket Code */}
+                  <div className="bg-zinc-900 rounded-xl p-4 text-center border border-white/5">
+                    <p className="text-xs text-zinc-500 mb-1.5 uppercase tracking-wider">
+                      Ticket Code
+                    </p>
+                    <p
+                      className="text-2xl font-bold text-white tracking-[0.15em] font-mono"
+                    >
+                      {bookingData.ticketCode}
+                    </p>
+                  </div>
+
+                  {/* Ticket Status */}
+                  <div className="flex items-center justify-center">
+                    {bookingData.ticketStatus === "VALID" && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-sm font-semibold text-emerald-400">
+                          Valid Ticket
+                        </span>
+                      </div>
+                    )}
+                    {bookingData.ticketStatus === "USED" && (
+                      <div className="space-y-2 text-center">
+                        <div className="flex items-center gap-2 px-4 py-2 bg-zinc-500/10 border border-zinc-500/20 rounded-full">
+                          <svg className="w-4 h-4 text-zinc-400" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span className="text-sm font-semibold text-zinc-400">
+                            Ticket Used
+                          </span>
+                        </div>
+                        {bookingData.checkedInAt && (
+                          <p className="text-xs text-zinc-500">
+                            Checked in {formatShortDate(bookingData.checkedInAt)}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {bookingData.ticketStatus === "CANCELLED" && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-full">
+                        <svg className="w-4 h-4 text-rose-400" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm font-semibold text-rose-400">
+                          Cancelled
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-zinc-600 text-center">
+                    Show this QR code at the venue for check-in
+                  </p>
+                </div>
+              ) : (
+                /* Fallback: No QR available */
+                <div className="bg-zinc-900 rounded-xl p-6 text-center border border-white/5">
+                  <p className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">
+                    Ticket Code
+                  </p>
+                  <p
+                    className="text-3xl font-bold text-white tracking-[0.2em] font-mono"
+                    style={{ letterSpacing: "0.2em" }}
+                  >
+                    {bookingData.ticketCode || "—"}
+                  </p>
+                  <p className="text-xs text-zinc-500 mt-3">
+                    {bookingData.bookingStatus !== "CONFIRMED"
+                      ? "Ticket not available for this booking status"
+                      : bookingData.paymentStatus !== "PAID"
+                        ? "Complete payment to access your ticket"
+                        : "Show this at the venue for check-in"}
+                  </p>
+                </div>
+              )}
 
               {/* Quantity badge */}
               <div className="mt-4 flex items-center justify-center gap-2">
@@ -552,6 +654,23 @@ const BookingDetails = () => {
 
             {/* Actions */}
             <div className="bg-[#18181B] border border-zinc-800 rounded-2xl p-6 space-y-3">
+              {/* View Ticket button (fullscreen-like view) */}
+              {isTicketEligible && bookingData.ticketStatus === "VALID" && (
+                <button
+                  onClick={() => {
+                    // Scroll to top of QR section smoothly
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="w-full py-3 bg-[#6366F1] text-white rounded-xl font-semibold hover:bg-[#5558E6] transition-colors flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75h-.75v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75h-.75v-.75z" />
+                  </svg>
+                  View Ticket
+                </button>
+              )}
+
               {/* View event button */}
               {event?.slug && (
                 <button
