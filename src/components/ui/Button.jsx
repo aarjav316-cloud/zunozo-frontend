@@ -9,13 +9,12 @@ const Button = ({
   fullWidth = false,
 }) => {
   const baseStyles =
-    "px-6 py-3 rounded-lg font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 disabled:opacity-50 disabled:cursor-not-allowed";
+    "px-6 py-3.5 rounded-xl text-[13px] uppercase font-bold tracking-[0.1em] transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] flex items-center justify-center gap-2";
 
   const variants = {
-    primary: "bg-amber-500 text-white hover:bg-amber-600 focus:ring-amber-500",
-    secondary: "bg-gray-700 text-white hover:bg-gray-600 focus:ring-gray-500",
-    outline:
-      "border border-gray-700 text-white hover:bg-gray-800 focus:ring-gray-500",
+    primary: "bg-white text-black hover:bg-zinc-100 shadow-[0_4px_10px_rgba(0,0,0,0.2)] border border-transparent",
+    secondary: "bg-white/10 text-white hover:bg-white/15",
+    outline: "border border-white/10 text-white hover:bg-white/5",
   };
 
   const widthStyles = fullWidth ? "w-full" : "";

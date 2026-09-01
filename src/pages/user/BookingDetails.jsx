@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useSocket } from "../../context/SocketContext";
 import { getBookingById } from "../../api/bookingApi";
 import CancelBookingModal from "../../components/booking/CancelBookingModal";
 import Toast from "../../components/ui/Toast";
@@ -68,6 +69,42 @@ const BookingDetails = () => {
       fetchBooking();
     }
   }, [bookingId, fetchBooking]);
+
+  /**
+   * ---------------------------------------------------
+   * Real-time check-in listener (Socket.io)
+   * ---------------------------------------------------
+   * When the organizer scans the QR, the ticket status
+   * updates immediately on the user's BookingDetails page.
+   */
+  const { socket } = useSocket();
+
+  useEffect(() => {
+    if (!socket || !bookingData) return;
+
+    const handleTicketUpdated = (data) => {
+      // Only update if this event matches the current booking
+      if (data.bookingId !== bookingData.bookingId) return;
+
+      setBookingData((prev) => ({
+        ...prev,
+        ticketStatus: data.ticketStatus,
+        checkedIn: data.checkedIn,
+        checkedInAt: data.checkedInAt,
+      }));
+
+      setToast({
+        message: "Your ticket has been checked in!",
+        type: "success",
+      });
+    };
+
+    socket.on("ticket:updated", handleTicketUpdated);
+
+    return () => {
+      socket.off("ticket:updated", handleTicketUpdated);
+    };
+  }, [socket, bookingData?.bookingId]);
 
   /**
    * ---------------------------------------------------

@@ -69,10 +69,7 @@ function VerifyOtpPage() {
   }
 
   return (
-    <AuthLayout
-      title="Verify your email"
-      subtitle={`We've sent a verification code to ${email}`}
-    >
+    <AuthLayout>
       <AuthCard>
         <form onSubmit={handleSubmit}>
           {error && (
@@ -88,7 +85,7 @@ function VerifyOtpPage() {
           )}
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
+            <label className="block text-[11px] font-semibold text-zinc-400 mb-3 text-center uppercase tracking-widest">
               Enter the 6-digit code
             </label>
             <OTPInput length={6} value={otp} onChange={setOtp} />
@@ -99,13 +96,13 @@ function VerifyOtpPage() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-400">
+        <div className="mt-8 text-center text-[13px] text-zinc-500">
           Didn't receive the code?{" "}
           <button
             type="button"
             onClick={handleResendOtp}
             disabled={resending}
-            className="text-amber-500 hover:text-amber-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-white font-semibold hover:text-zinc-300 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {resending ? "Sending..." : "Resend OTP"}
           </button>

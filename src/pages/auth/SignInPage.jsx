@@ -45,10 +45,7 @@ function SignInPage() {
   };
 
   return (
-    <AuthLayout
-      title="Welcome back"
-      subtitle="Sign in to continue exploring events on Zunozo"
-    >
+    <AuthLayout>
       <AuthCard>
         <form onSubmit={handleSubmit}>
           {error && (
@@ -78,10 +75,10 @@ function SignInPage() {
             required
           />
 
-          <div className="mb-6 text-right">
+          <div className="mb-8 mt-1 text-right">
             <Link
               to="/forgot-password"
-              className="text-sm text-amber-500 hover:text-amber-400 transition"
+              className="text-[13px] font-semibold text-white hover:text-zinc-300 transition-colors duration-300"
             >
               Forgot password?
             </Link>
@@ -92,19 +89,21 @@ function SignInPage() {
           </Button>
         </form>
 
-        <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-gray-700"></div>
-          <span className="px-4 text-sm text-gray-400">or continue with</span>
-          <div className="flex-1 border-t border-gray-700"></div>
+        <div className="my-8 flex items-center gap-4">
+          <div className="flex-1 border-t border-white/10"></div>
+          <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">
+            or continue with
+          </span>
+          <div className="flex-1 border-t border-white/10"></div>
         </div>
 
         <GoogleButton onClick={handleGoogleAuth} />
 
-        <div className="mt-6 text-center text-sm text-gray-400">
+        <div className="mt-8 text-center text-[13px] text-zinc-500">
           Don't have an account?{" "}
           <Link
             to="/signup"
-            className="text-amber-500 hover:text-amber-400 transition"
+            className="text-white font-semibold hover:text-zinc-300 transition-colors duration-300"
           >
             Sign up
           </Link>

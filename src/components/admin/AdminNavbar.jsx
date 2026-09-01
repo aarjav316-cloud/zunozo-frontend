@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import NotificationBell from "../ui/NotificationBell";
 
 const AdminNavbar = () => {
   const { user } = useAuth();
@@ -18,10 +19,7 @@ const AdminNavbar = () => {
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-orange-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">Z</span>
-            </div>
-            <span className="text-xl font-semibold text-white">Zunozo</span>
+            <span className="font-instrument text-2xl font-normal text-white tracking-wide">Zunozo</span>
           </Link>
 
           {/* Navigation Links */}
@@ -51,12 +49,15 @@ const AdminNavbar = () => {
               All Events
             </Link>
 
+            {/* Notification Bell */}
+            <NotificationBell />
+
             {/* Profile Avatar */}
             <Link
               to="/profile"
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center hover:scale-105 transition-transform"
+              className="w-10 h-10 rounded-full bg-white text-black font-semibold flex items-center justify-center hover:bg-zinc-200 transition-colors shadow-sm"
             >
-              <span className="text-sm font-bold text-white">
+              <span className="text-sm font-bold text-black">
                 {getInitials(user?.name)}
               </span>
             </Link>

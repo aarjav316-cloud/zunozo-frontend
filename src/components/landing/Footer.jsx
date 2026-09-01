@@ -1,11 +1,15 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import AboutUsModal from "./AboutUsModal";
 
 const Footer = () => {
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+
   return (
     <footer className="bg-[#09090B] border-t border-white/10 py-20 px-6">
       <div className="max-w-7xl mx-auto">
         {/* Main Footer Content */}
-        <div className="grid md:grid-cols-4 gap-16 mb-16">
+        <div className="grid md:grid-cols-3 gap-16 mb-16">
           {/* Brand Column */}
           <div className="space-y-6">
             <h3 className="font-['Anton'] text-2xl text-white uppercase">
@@ -42,28 +46,12 @@ const Footer = () => {
             </h4>
             <ul className="space-y-4">
               <li>
-                <Link
-                  to="/about"
+                <button
+                  onClick={() => setIsAboutOpen(true)}
                   className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
                 >
                   About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/careers"
-                  className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
-                >
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/blog"
-                  className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
-                >
-                  Blog
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
@@ -101,41 +89,8 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Organizers Column */}
-          <div>
-            <h4 className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mb-6">
-              Organizers
-            </h4>
-            <ul className="space-y-4">
-              <li>
-                <Link
-                  to="/organizer"
-                  className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
-                >
-                  Create Event
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/organizer/pricing"
-                  className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
-                >
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/organizer/resources"
-                  className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
-                >
-                  Resources
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
 
-        {/* Premium Divider */}
+        </div>
         <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent mb-10" />
 
         {/* Bottom Section */}
@@ -176,6 +131,8 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      <AboutUsModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </footer>
   );
 };

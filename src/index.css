@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* Google Fonts */
-@import url("https://fonts.googleapis.com/css2?family=Geist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Changa+One:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=Cormorant:ital,wght@0,300..700;1,300..700&family=Geist:ital,wght@0,100..900;1,100..900&family=Instrument+Serif:ital@0;1&display=swap');
 
 @font-face {
   font-family: "Anton";
@@ -14,9 +14,56 @@
 }
 
 /* Font families */
+@font-face {
+  font-family: "BL Melody";
+  src: url("./assets/fonts/BLMelody-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "BL Melody";
+  src: url("./assets/fonts/BLMelody-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Uni Sans";
+  src: url("/fonts/uni-sans/Uni Sans Heavy Italic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Uni Sans";
+  src: url("/fonts/uni-sans/Uni Sans Thin Italic.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Uni Sans";
+  src: url("/fonts/uni-sans/Uni Sans Heavy.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Uni Sans";
+  src: url("/fonts/uni-sans/Uni Sans Thin.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
 @theme {
   --font-anton: "Anton", sans-serif;
   --font-inter: "Inter", sans-serif;
+  --font-geist: "Geist", sans-serif;
+  --font-instrument: "Instrument Serif", serif;
+  --font-melody: "BL Melody", sans-serif;
+  --font-changa: "Changa One", sans-serif;
+  --font-unisans: "Uni Sans", sans-serif;
 }
 
 /* Default font */

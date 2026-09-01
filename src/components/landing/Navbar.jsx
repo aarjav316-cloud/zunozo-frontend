@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import NotificationBell from "../ui/NotificationBell";
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -19,19 +20,16 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-black/60 backdrop-blur-xl border-b border-white/10"
+          ? "bg-black/80 md:bg-black/60 backdrop-blur-xl border-b border-white/10"
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 h-20">
-        <div className="flex items-center justify-between h-full gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 md:h-20">
+        <div className="flex items-center justify-between h-full gap-4 md:gap-6">
           {/* Logo & Search Bar */}
           <div className="flex items-center gap-6 flex-1">
             <Link to="/" className="flex items-center gap-2 group shrink-0">
-              <div className="w-8 h-8 bg-linear-to-br from-purple-600 to-orange-500 rounded-lg flex items-center justify-center transition-transform duration-200 group-hover:scale-105">
-                <span className="text-white font-bold text-lg">Z</span>
-              </div>
-              <span className="text-xl font-semibold text-white transition-colors duration-200">
+              <span className="font-instrument text-3xl font-normal text-white tracking-wide transition-colors duration-200">
                 Zunozo
               </span>
             </Link>
@@ -80,12 +78,15 @@ const Navbar = () => {
             {authLoading ? (
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
-              <Link
-                to="/profile"
-                className="inline-flex items-center justify-center w-10 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
-              >
-                {user.name?.charAt(0).toUpperCase() || "U"}
-              </Link>
+              <>
+                <NotificationBell />
+                <Link
+                  to="/profile"
+                  className="inline-flex items-center justify-center w-10 h-10 bg-white text-black rounded-full text-sm font-semibold hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-200 shadow-sm"
+                >
+                  {user.name?.charAt(0).toUpperCase() || "U"}
+                </Link>
+              </>
             ) : (
               <Link
                 to="/signin"

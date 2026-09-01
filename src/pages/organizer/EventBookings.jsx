@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getEventBookings, checkInBooking } from "../../api/bookingApi";
+import { useSocket } from "../../context/SocketContext";
 import StatCard from "../../components/organizer/StatCard";
 import Toast from "../../components/ui/Toast";
 
@@ -17,10 +18,58 @@ const EventBookings = () => {
   const [search, setSearch] = useState("");
   const [isCheckingIn, setIsCheckingIn] = useState(false);
   const [toast, setToast] = useState(null);
+  const { socket } = useSocket();
 
   useEffect(() => {
     fetchBookings();
   }, [eventId, page, statusFilter, search]);
+
+  /**
+   * ---------------------------------------------------
+   * Real-time check-in listener (Socket.io)
+   * ---------------------------------------------------
+   * When a ticket is checked in (from QR scanner or
+   * another device), update the local state immediately.
+   */
+  useEffect(() => {
+    if (!socket || !eventId) return;
+
+    const handleTicketCheckedIn = (socketData) => {
+      // Only react to check-ins for this specific event
+      if (socketData.eventId !== eventId) return;
+
+      // Optimistically update the checked-in count
+      setData((prev) => ({
+        ...prev,
+        summary: {
+          ...prev.summary,
+          checkedInAttendees: (prev.summary?.checkedInAttendees || 0) + 1,
+        },
+        // Update the specific booking row in the list
+        bookings: prev.bookings.map((b) =>
+          b.ticketCode === socketData.ticketCode
+            ? {
+                ...b,
+                ticketStatus: socketData.ticketStatus,
+                checkedIn: socketData.checkedIn,
+                checkedInAt: socketData.checkedInAt,
+              }
+            : b
+        ),
+      }));
+
+      setToast({
+        message: `${socketData.attendee?.name || "Attendee"} checked in!`,
+        type: "success",
+      });
+    };
+
+    socket.on("ticket:checked-in", handleTicketCheckedIn);
+
+    return () => {
+      socket.off("ticket:checked-in", handleTicketCheckedIn);
+    };
+  }, [socket, eventId]);
 
   const fetchBookings = async () => {
     try {

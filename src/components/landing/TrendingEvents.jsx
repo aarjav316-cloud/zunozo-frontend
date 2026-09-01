@@ -55,22 +55,15 @@ const TrendingEvents = () => {
       }`}
     >
       <h2
-        className="text-4xl md:text-5xl lg:text-6xl text-white mb-4"
+        className="text-4xl md:text-5xl lg:text-7xl text-white mb-2 font-changa font-normal tracking-tight"
         style={{
-          fontFamily: '"Geist", sans-serif',
-          fontWeight: 800,
-          letterSpacing: "-0.03em",
           lineHeight: "0.95",
         }}
       >
         What's Hot
       </h2>
       <p
-        className="text-base lg:text-lg text-gray-400"
-        style={{
-          fontFamily: '"Geist", sans-serif',
-          fontWeight: 400,
-        }}
+        className="text-base lg:text-lg text-gray-400 font-geist"
       >
         Events everyone is talking about.
       </p>
@@ -79,7 +72,7 @@ const TrendingEvents = () => {
 
   if (loading) {
     return (
-      <section className="pt-20 md:pt-24 lg:pt-28 pb-24 px-6">
+      <section className="pt-20 md:pt-24 lg:pt-28 pb-10 md:pb-24 px-6">
         <div className="max-w-7xl mx-auto">
           {headingContent}
 
@@ -101,7 +94,7 @@ const TrendingEvents = () => {
 
   if (error) {
     return (
-      <section className="pt-20 md:pt-24 lg:pt-28 pb-24 px-6">
+      <section className="pt-20 md:pt-24 lg:pt-28 pb-10 md:pb-24 px-6">
         <div className="max-w-7xl mx-auto">
           {headingContent}
 
@@ -115,7 +108,7 @@ const TrendingEvents = () => {
 
   if (events.length === 0) {
     return (
-      <section className="pt-20 md:pt-24 lg:pt-28 pb-24 px-6">
+      <section className="pt-20 md:pt-24 lg:pt-28 pb-10 md:pb-24 px-6">
         <div className="max-w-7xl mx-auto">
           {headingContent}
 
@@ -128,7 +121,7 @@ const TrendingEvents = () => {
   }
 
   return (
-    <section className="pt-20 md:pt-24 lg:pt-28 pb-24 px-6">
+    <section className="pt-20 md:pt-24 lg:pt-28 pb-10 md:pb-24 px-6">
       <div className="max-w-7xl mx-auto">
         {headingContent}
 

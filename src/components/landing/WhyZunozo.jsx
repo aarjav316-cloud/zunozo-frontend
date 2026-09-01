@@ -250,7 +250,7 @@ const WhyZunozo = () => {
 
   /* ─── JSX ─── */
   return (
-    <section className="relative py-32 px-6 bg-[#09090B] overflow-hidden">
+    <section className="relative pt-12 pb-24 md:py-32 px-6 bg-[#09090B] overflow-hidden">
       <div className="max-w-6xl mx-auto">
         {/* ─── Section Heading (UNCHANGED) ─── */}
         <div className="text-center mb-32">

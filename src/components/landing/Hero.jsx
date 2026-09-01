@@ -27,11 +27,11 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="min-h-[85vh] flex items-center pt-20 px-4 sm:px-6">
-      <div className="max-w-[1300px] mx-auto w-full px-6">
-        <div className="grid lg:grid-cols-[53%_47%] gap-12 lg:gap-16 items-center">
-          <div className="space-y-6 md:space-y-8 text-center md:text-left ">
-            <h1 className="font-['Anton'] text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white leading-none tracking-wide uppercase lg:mt-10">
+    <section className="min-h-0 lg:min-h-[85vh] flex items-center pt-28 pb-10 lg:pt-20 lg:pb-0 px-4 sm:px-6">
+      <div className="max-w-[1300px] mx-auto w-full lg:px-6">
+        <div className="grid lg:grid-cols-[53%_47%] gap-10 lg:gap-16 items-center">
+          <div className="space-y-8 lg:space-y-8 text-center md:text-left ">
+            <h1 className="font-['Anton'] text-[52px] leading-[0.95] sm:text-6xl md:text-7xl lg:text-8xl font-normal text-white uppercase tracking-tight lg:tracking-wide lg:mt-10">
               DISCOVER
               <br />
               THE NEXT
@@ -43,15 +43,15 @@ const Hero = () => {
               OF EVENTS
             </h1>
 
-            <p className="text-base sm:text-[17px]  md:text-lg text-zinc-400 leading-relaxed max-w-[480px] mx-auto md:mx-0">
+            <p className="text-base font-medium sm:text-[17px] md:text-lg text-zinc-400 leading-relaxed max-w-[480px] mx-auto md:mx-0 px-2 lg:px-0">
               Discover concerts, house parties, run clubs, workshops and
               experiences near you.
             </p>
 
-            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center md:justify-start">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center md:justify-start px-2 lg:px-0 pt-2 lg:pt-0">
               <Link
                 to="/events"
-                className="group inline-flex items-center justify-center gap-2 px-10 h-14 bg-white text-black rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-300 shadow-lg"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-10 h-14 bg-white text-black rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-gray-100 hover:-translate-y-0.5 transition-all duration-300 shadow-lg"
               >
                 Explore Events
                 <svg
@@ -74,14 +74,14 @@ const Hero = () => {
                   {user?.role === "organizer" ? (
                     <Link
                       to="/organizer/events"
-                      className="inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
                     >
                       My Events
                     </Link>
                   ) : (
                     <Link
                       to="/become-organizer"
-                      className="inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
+                      className="w-full sm:w-auto inline-flex items-center justify-center px-10 h-14 bg-transparent text-white border border-zinc-700 rounded-full font-semibold text-sm uppercase tracking-wide hover:bg-zinc-900 hover:border-zinc-600 hover:-translate-y-0.5 transition-all duration-300"
                     >
                       Become Organizer
                     </Link>
@@ -91,7 +91,7 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="relative w-full flex justify-center order-last md:order-none lg:mt-10">
+          <div className="hidden lg:flex relative w-full justify-center lg:mt-10">
             <div className="absolute inset-0 bg-linear-to-br from-purple-600/20 to-orange-500/20 rounded-3xl blur-3xl"></div>
             <div className="relative w-full max-w-[340px] sm:max-w-[440px] md:w-[580px] lg:w-[760px] aspect-[4/5] rounded-[40px] overflow-hidden border border-gray-700 shadow-2xl">
               <img

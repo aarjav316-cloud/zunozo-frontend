@@ -10,7 +10,7 @@ const BrowseCTA = () => {
         </h2>
         <Link
           to="/events"
-          className="inline-block px-12 py-5 bg-linear-to-r from-purple-600 to-orange-500 text-white rounded-full font-semibold text-xl hover:opacity-90 transition"
+          className="inline-block px-12 py-5 bg-white text-black rounded-full font-semibold text-xl hover:bg-zinc-100 transition shadow-lg"
         >
           Browse All Events
         </Link>

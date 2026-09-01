@@ -5,7 +5,7 @@ const GoogleButton = ({ onClick, children = "Continue with Google" }) => {
     <button
       type="button"
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white hover:bg-gray-50 text-gray-900 font-medium rounded-lg border border-gray-300 transition focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 focus:ring-offset-gray-900"
+      className="w-full flex items-center justify-center gap-3 px-6 py-3.5 bg-white hover:bg-zinc-100 text-black text-sm font-semibold rounded-xl border border-transparent transition-all duration-300 active:scale-[0.98] focus:outline-none shadow-[0_4px_15px_rgba(255,255,255,0.05)]"
     >
       <svg
         className="w-5 h-5"

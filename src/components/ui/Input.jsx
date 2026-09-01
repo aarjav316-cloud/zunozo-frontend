@@ -11,11 +11,11 @@ const Input = ({
   required = false,
 }) => {
   return (
-    <div className="mb-4">
+    <div className="mb-5">
       {label && (
         <label
           htmlFor={id}
-          className="block text-sm font-medium text-gray-300 mb-2"
+          className="block text-[11px] font-semibold text-zinc-400 mb-2 uppercase tracking-widest"
         >
           {label}
         </label>
@@ -28,7 +28,7 @@ const Input = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition"
+        className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-zinc-600 focus:outline-none focus:bg-white/10 focus:border-white/30 focus:ring-0 focus:shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all duration-300"
       />
     </div>
   );
