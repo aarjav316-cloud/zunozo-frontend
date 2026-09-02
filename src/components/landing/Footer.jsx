@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import AboutUsModal from "./AboutUsModal";
+import ContactUsModal from "./ContactUsModal";
+import PrivacyPolicyModal from "./PrivacyPolicyModal";
 
 const Footer = () => {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   return (
     <footer className="bg-[#09090B] border-t border-white/10 py-20 px-6">
@@ -63,28 +67,20 @@ const Footer = () => {
             </h4>
             <ul className="space-y-4">
               <li>
-                <Link
-                  to="/help"
-                  className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
-                >
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
+                <button
+                  onClick={() => setIsContactOpen(true)}
                   className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
                 >
                   Contact Us
-                </Link>
+                </button>
               </li>
               <li>
-                <Link
-                  to="/privacy"
+                <button
+                  onClick={() => setIsPrivacyOpen(true)}
                   className="text-zinc-500 text-sm hover:text-white transition-colors duration-200"
                 >
                   Privacy Policy
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
@@ -133,6 +129,8 @@ const Footer = () => {
       </div>
 
       <AboutUsModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+      <ContactUsModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+      <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
     </footer>
   );
 };

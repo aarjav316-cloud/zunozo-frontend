@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AboutUsModal = ({ isOpen, onClose }) => {
@@ -6,17 +6,14 @@ const AboutUsModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      const timer = setTimeout(() => setShow(true), 10);
-      return () => clearTimeout(timer);
-    } else {
-      setShow(false);
-      document.body.style.overflow = "";
-    }
+    if (!isOpen) return;
+    document.body.style.overflow = "hidden";
+    const timer = setTimeout(() => setShow(true), 10);
     
     return () => {
       document.body.style.overflow = "";
+      setShow(false);
+      clearTimeout(timer);
     };
   }, [isOpen]);
 
@@ -33,7 +30,16 @@ const AboutUsModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 font-['Geist']">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 font-sans">
+      <style>{`
+        .about-us-hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .about-us-hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
       {/* Backdrop */}
       <div 
         className={`absolute inset-0 bg-black/80 transition-opacity duration-300 ease-out ${show ? "opacity-100" : "opacity-0"}`}
@@ -43,14 +49,14 @@ const AboutUsModal = ({ isOpen, onClose }) => {
       
       {/* Modal Content */}
       <div 
-        className={`relative w-full max-w-[800px] bg-[#09090b] border border-white/10 shadow-2xl overflow-y-auto max-h-[90vh] md:max-h-[85vh] transition-all duration-400 ease-out transform ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+        className={`about-us-hide-scrollbar relative w-full max-w-[800px] bg-[#09090b] border border-white/10 shadow-2xl overflow-y-auto max-h-[90vh] md:max-h-[85vh] transition-all duration-400 ease-out transform ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="about-us-title"
       >
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-6 md:px-12 pt-6 md:pt-10 pb-4 bg-gradient-to-b from-[#09090b] via-[#09090b] to-transparent">
-          <h2 className="font-['Instrument_Serif'] text-2xl text-white">Zunozo</h2>
+          <h2 className="font-bold text-2xl text-white">Zunozo</h2>
           <button 
             onClick={onClose}
             className="p-2 text-zinc-500 hover:text-white rounded-full hover:bg-white/5 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-700"
@@ -68,7 +74,7 @@ const AboutUsModal = ({ isOpen, onClose }) => {
           
           {/* Brand Intro */}
           <section className="mt-8 md:mt-12">
-            <h1 id="about-us-title" className="font-['Instrument_Serif'] text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-white max-w-3xl mb-8">
+            <h1 id="about-us-title" className="font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.05] tracking-tight text-white max-w-3xl mb-8">
               EVENTS ARE BETTER<br />WHEN THEY FEEL LIKE YOU.
             </h1>
             <div className="space-y-6 text-zinc-400 text-lg md:text-xl leading-relaxed max-w-2xl">
@@ -128,7 +134,7 @@ const AboutUsModal = ({ isOpen, onClose }) => {
           {/* Built For Creators */}
           <section>
             <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-6">Built For Creators</h3>
-            <h2 className="font-['Instrument_Serif'] text-3xl md:text-4xl leading-tight text-white mb-6">
+            <h2 className="font-bold text-3xl md:text-4xl leading-tight text-white mb-6">
               BUILT FOR THE PEOPLE<br />CREATING THE MOMENTS.
             </h2>
             <div className="space-y-6 text-zinc-300 text-lg md:text-xl leading-relaxed max-w-2xl">
@@ -141,7 +147,7 @@ const AboutUsModal = ({ isOpen, onClose }) => {
           {/* Brand Philosophy */}
           <section>
             <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-6">Brand Philosophy</h3>
-            <h2 className="font-['Instrument_Serif'] text-3xl md:text-4xl leading-tight text-white mb-6">
+            <h2 className="font-bold text-3xl md:text-4xl leading-tight text-white mb-6">
               LESS SCROLLING.<br />MORE EXPERIENCING.
             </h2>
             <div className="space-y-6 text-zinc-300 text-lg md:text-xl leading-relaxed max-w-2xl">
@@ -159,7 +165,7 @@ const AboutUsModal = ({ isOpen, onClose }) => {
 
           {/* CTA */}
           <section className="pt-8 md:pt-12 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-8 border-t border-white/10">
-            <h2 className="font-['Instrument_Serif'] text-3xl md:text-4xl leading-tight text-white max-w-sm">
+            <h2 className="font-bold text-3xl md:text-4xl leading-tight text-white max-w-sm">
               YOUR NEXT MEMORY<br />IS OUT THERE.
             </h2>
             <button
