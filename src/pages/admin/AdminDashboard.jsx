@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { getPendingEvents, reviewEvent } from "../../api/eventApi";
 import StatCard from "../../components/admin/StatCard";
 import PendingEventCard from "../../components/admin/PendingEventCard";
@@ -10,7 +10,6 @@ import Toast from "../../components/ui/Toast";
 
 const AdminDashboard = () => {
   const [events, setEvents] = useState([]);
-  const [filteredEvents, setFilteredEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,27 +20,26 @@ const AdminDashboard = () => {
   const [reviewAction, setReviewAction] = useState(null);
   const [toast, setToast] = useState(null);
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
-
-  const fetchEvents = async () => {
+  const fetchEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const response = await getPendingEvents();
       if (response.success) {
         setEvents(response.events || []);
-        setFilteredEvents(response.events || []);
       }
     } catch (err) {
       setError(err.message || "Failed to load events");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
+
+  const filteredEvents = useMemo(() => {
     let filtered = events;
 
     // Filter by status
@@ -60,8 +58,8 @@ const AdminDashboard = () => {
       );
     }
 
-    setFilteredEvents(filtered);
-  }, [searchQuery, statusFilter, events]);
+    return filtered;
+  }, [events, statusFilter, searchQuery]);
 
   // Calculate statistics
   const stats = {
@@ -185,35 +183,37 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#09090B]">
-      <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="min-h-screen bg-[#09090B] pb-10 sm:pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
+        <div className="mb-8 sm:mb-10">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 sm:gap-6 mb-8 sm:mb-10">
             <div>
               <h1
-                className="text-5xl md:text-6xl font-bold text-white tracking-tight mb-3"
+                className="text-white tracking-tight mb-2 sm:mb-3 font-bold"
                 style={{
                   fontFamily: '"Geist", sans-serif',
                   letterSpacing: "-0.03em",
+                  fontSize: "clamp(1.75rem, 5vw, 3.75rem)",
+                  lineHeight: 1.1,
                 }}
               >
                 Admin Dashboard
               </h1>
-              <p className="text-zinc-500">
+              <p className="text-zinc-500 text-base sm:text-lg">
                 Review and moderate submitted events
               </p>
             </div>
-            <div className="flex items-center gap-3 self-start">
+            <div className="flex items-center gap-2.5 sm:gap-3 self-start">
               {stats.pending > 0 && (
-                <div className="px-4 py-2 bg-amber-500/10 text-amber-500 rounded-xl text-sm font-medium border border-amber-500/20">
+                <div className="px-3 sm:px-4 py-1.5 sm:py-2 bg-zinc-900 text-zinc-300 rounded-xl text-xs sm:text-sm font-medium border border-zinc-800">
                   {stats.pending} Pending
                 </div>
               )}
               <button
                 onClick={fetchEvents}
                 disabled={loading}
-                className="px-5 py-2.5 bg-white text-black rounded-xl font-medium hover:bg-zinc-100 transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white text-black rounded-xl font-medium hover:bg-zinc-100 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 text-sm sm:text-base whitespace-nowrap"
               >
                 <svg
                   className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
@@ -234,13 +234,13 @@ const AdminDashboard = () => {
           </div>
 
           {/* Statistics */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 min-[375px]:gap-3 sm:gap-4 mb-8 sm:mb-10">
             <StatCard
               icon={
                 <svg
                   className="w-5 h-5"
                   fill="none"
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -253,14 +253,13 @@ const AdminDashboard = () => {
               }
               label="Pending Review"
               value={stats.pending}
-              color="amber"
             />
             <StatCard
               icon={
                 <svg
                   className="w-5 h-5"
                   fill="none"
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -273,14 +272,13 @@ const AdminDashboard = () => {
               }
               label="Approved"
               value={stats.approved}
-              color="emerald"
             />
             <StatCard
               icon={
                 <svg
                   className="w-5 h-5"
                   fill="none"
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -293,14 +291,13 @@ const AdminDashboard = () => {
               }
               label="Rejected"
               value={stats.rejected}
-              color="rose"
             />
             <StatCard
               icon={
                 <svg
                   className="w-5 h-5"
                   fill="none"
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -313,14 +310,13 @@ const AdminDashboard = () => {
               }
               label="Changes Requested"
               value={stats.changesRequested}
-              color="blue"
             />
             <StatCard
               icon={
                 <svg
                   className="w-5 h-5"
                   fill="none"
-                  strokeWidth="2"
+                  strokeWidth="1.75"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
@@ -333,7 +329,6 @@ const AdminDashboard = () => {
               }
               label="Total Events"
               value={stats.total}
-              color="zinc"
             />
           </div>
 

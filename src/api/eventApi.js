@@ -18,6 +18,22 @@ export const getApprovedEvents = async () => {
   }
 };
 
+export const searchEvents = async (query) => {
+  try {
+    const response = await axiosInstance.get(
+      `/events/search?q=${encodeURIComponent(query)}`,
+    );
+    return response.data;
+  } catch (error) {
+    throw (
+      error.response?.data || {
+        success: false,
+        message: "Something went wrong",
+      }
+    );
+  }
+};
+
 export const getEventBySlug = async (slug) => {
   try {
     const response = await axiosInstance.get(`/events/${slug}`);
@@ -38,7 +54,9 @@ export const getEventBySlug = async (slug) => {
 
 export const createEvent = async (data) => {
   try {
-    const response = await axiosInstance.post("/events", data);
+    const response = await axiosInstance.post("/events", data, {
+      headers: data instanceof FormData ? { "Content-Type": "multipart/form-data" } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw (
@@ -80,7 +98,9 @@ export const getEventById = async (eventId) => {
 
 export const updateEvent = async (eventId, data) => {
   try {
-    const response = await axiosInstance.patch(`/events/${eventId}`, data);
+    const response = await axiosInstance.patch(`/events/${eventId}`, data, {
+      headers: data instanceof FormData ? { "Content-Type": "multipart/form-data" } : undefined,
+    });
     return response.data;
   } catch (error) {
     throw (

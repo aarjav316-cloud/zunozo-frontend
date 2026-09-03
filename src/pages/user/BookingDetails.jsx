@@ -769,7 +769,7 @@ const BookingDetails = () => {
                       className="w-10 h-10 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center">
                       <span className="text-sm font-bold text-white">
                         {organizer.name?.[0]?.toUpperCase() || "O"}
                       </span>

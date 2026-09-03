@@ -1,19 +1,20 @@
-const StatCard = ({ icon, label, value, color = "zinc" }) => {
-  const colorClasses = {
-    zinc: "bg-zinc-900 border-zinc-800 text-zinc-400",
-    emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-500",
-    amber: "bg-amber-500/10 border-amber-500/20 text-amber-500",
-    rose: "bg-rose-500/10 border-rose-500/20 text-rose-500",
-    blue: "bg-blue-500/10 border-blue-500/20 text-blue-500",
-  };
-
+const StatCard = ({ icon, label, value }) => {
   return (
-    <div
-      className={`${colorClasses[color]} border rounded-xl p-6 transition-all hover:scale-[1.02]`}
-    >
-      <div className="flex items-center gap-3 mb-3">{icon}</div>
-      <div className="text-3xl font-bold text-white mb-1">{value}</div>
-      <div className="text-sm">{label}</div>
+    <div className="bg-zinc-900/60 border border-zinc-800/80 rounded-2xl p-3.5 min-[375px]:p-4 sm:p-5 lg:p-6 hover:border-zinc-700/80 transition-all duration-200 flex flex-col justify-between min-w-0">
+      {icon && (
+        <div className="flex items-center justify-between mb-2 sm:mb-4 text-zinc-400">
+          {icon}
+        </div>
+      )}
+      <div
+        className="text-2xl min-[375px]:text-3xl sm:text-4xl font-semibold text-white tracking-tight mb-1 truncate"
+        style={{ fontFamily: '"Geist", sans-serif' }}
+      >
+        {value}
+      </div>
+      <div className="text-[10px] min-[375px]:text-[11px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wide sm:tracking-wider leading-tight mt-auto truncate">
+        {label}
+      </div>
     </div>
   );
 };

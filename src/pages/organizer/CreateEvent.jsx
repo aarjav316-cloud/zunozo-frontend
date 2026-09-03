@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createEvent } from "../../api/eventApi";
 import FormSection from "../../components/organizer/CreateEvent/FormSection";
@@ -10,10 +10,16 @@ import TagsInput from "../../components/organizer/CreateEvent/TagsInput";
 import PricingToggle from "../../components/organizer/CreateEvent/PricingToggle";
 import Toast from "../../components/ui/Toast";
 
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 const CreateEvent = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const fileInputRef = useRef(null);
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [coverImagePreview, setCoverImagePreview] = useState(null);
   
   const [formData, setFormData] = useState({
     title: "",
@@ -39,6 +45,58 @@ const CreateEvent = () => {
   });
 
   const [errors, setErrors] = useState({});
+
+  // Cleanup preview URL on unmount or change
+  useEffect(() => {
+    return () => {
+      if (coverImagePreview) {
+        URL.revokeObjectURL(coverImagePreview);
+      }
+    };
+  }, [coverImagePreview]);
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate type
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setToast({ type: "error", message: "Please select a JPG, PNG, or WEBP image." });
+      e.target.value = "";
+      return;
+    }
+
+    // Validate size
+    if (file.size > MAX_FILE_SIZE) {
+      setToast({ type: "error", message: "Please select an image under 5MB." });
+      e.target.value = "";
+      return;
+    }
+
+    // Revoke old preview URL
+    if (coverImagePreview) {
+      URL.revokeObjectURL(coverImagePreview);
+    }
+
+    setCoverImageFile(file);
+    setCoverImagePreview(URL.createObjectURL(file));
+
+    // Clear coverImage error
+    if (errors.coverImage) {
+      setErrors((prev) => ({ ...prev, coverImage: "" }));
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (coverImagePreview) {
+      URL.revokeObjectURL(coverImagePreview);
+    }
+    setCoverImageFile(null);
+    setCoverImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -111,7 +169,10 @@ const CreateEvent = () => {
       else if (formData.price <= 0) newErrors.price = "Price must be greater than 0";
     }
 
-    if (!formData.coverImage.trim()) newErrors.coverImage = "Cover image URL is required";
+    // Require either an uploaded file or a URL
+    if (!coverImageFile && !formData.coverImage.trim()) {
+      newErrors.coverImage = "Cover image is required";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -128,28 +189,41 @@ const CreateEvent = () => {
     setLoading(true);
     
     try {
-      // Filter out empty gallery image URLs
-      const submitData = {
-        ...formData,
-        galleryImages: formData.galleryImages.filter(url => url.trim() !== ""),
-        price: formData.isFree ? 0 : Number(formData.price),
-        capacity: Number(formData.capacity)
-      };
+      const filteredGalleryImages = formData.galleryImages.filter(url => url.trim() !== "");
 
-      await createEvent(submitData);
+      // Build FormData for multipart upload
+      const fd = new FormData();
+      fd.append("title", formData.title);
+      fd.append("shortDescription", formData.shortDescription);
+      fd.append("description", formData.description);
+      fd.append("category", formData.category);
+      fd.append("tags", JSON.stringify(formData.tags));
+      fd.append("startDate", formData.startDate);
+      fd.append("endDate", formData.endDate);
+      fd.append("venue", JSON.stringify(formData.venue));
+      fd.append("galleryImages", JSON.stringify(filteredGalleryImages));
+      fd.append("capacity", Number(formData.capacity));
+      fd.append("isFree", formData.isFree);
+      fd.append("price", formData.isFree ? 0 : Number(formData.price));
+
+      if (coverImageFile) {
+        fd.append("coverImageFile", coverImageFile);
+      } else if (formData.coverImage.trim()) {
+        fd.append("coverImage", formData.coverImage.trim());
+      }
+
+      await createEvent(fd);
       
       setToast({ type: "success", message: "Event created successfully!" });
       
       setTimeout(() => {
-        navigate("/organizer/events"); // navigate to My Events page after success
+        navigate("/organizer/events");
       }, 2000);
       
     } catch (err) {
-      // Show backend error message cleanly
       const errorMessage = err.response?.data?.message || err.message || "Failed to create event. Please try again.";
       setToast({ type: "error", message: errorMessage });
       
-      // Detailed backend validation errors if they come as an array or object
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       }
@@ -189,7 +263,7 @@ const CreateEvent = () => {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               )}
-              {loading ? "Creating..." : "Publish Event"}
+              {loading ? "Uploading..." : "Publish Event"}
             </button>
           </div>
         </div>
@@ -265,23 +339,86 @@ const CreateEvent = () => {
             </FormSection>
             
             {/* Images */}
-            <FormSection title="Images" description="Visuals to make your event stand out. Use image URLs for now.">
+            <FormSection title="Event Image" description="Upload a cover image to make your event stand out.">
               <div className="space-y-5">
-                <InputField
-                  label="Cover Image URL"
-                  name="coverImage"
-                  value={formData.coverImage}
-                  onChange={handleChange}
-                  error={errors.coverImage}
-                  placeholder="https://example.com/cover.jpg"
-                  required
-                />
-                {formData.coverImage && (
-                  <div className="mt-2 h-40 w-full rounded-xl overflow-hidden border border-zinc-800 relative bg-zinc-900">
-                    <img src={formData.coverImage} alt="Cover Preview" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
-                  </div>
-                )}
                 
+                {/* Cover Image Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-zinc-300 mb-2">Cover Image <span className="text-rose-400">*</span></label>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    id="cover-image-upload"
+                  />
+
+                  {!coverImagePreview ? (
+                    <label
+                      htmlFor="cover-image-upload"
+                      className={`group relative flex flex-col items-center justify-center w-full h-48 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 ${
+                        errors.coverImage
+                          ? "border-rose-500/50 bg-rose-500/5 hover:border-rose-500/70"
+                          : "border-zinc-700 bg-zinc-900/50 hover:border-zinc-500 hover:bg-zinc-900"
+                      }`}
+                    >
+                      <div className="flex flex-col items-center gap-3 text-zinc-400 group-hover:text-zinc-300 transition-colors">
+                        <div className="w-12 h-12 rounded-xl bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-700 transition-colors">
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 4v16m8-8H4" />
+                          </svg>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium">Upload Event Image</p>
+                          <p className="text-xs text-zinc-500 mt-1">JPG, PNG, or WEBP · Max 5MB</p>
+                        </div>
+                      </div>
+                    </label>
+                  ) : (
+                    <div className="relative group">
+                      <div className="h-48 w-full rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900">
+                        <img
+                          src={coverImagePreview}
+                          alt="Cover Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      {/* Overlay with actions */}
+                      <div className="absolute inset-0 bg-black/60 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-3">
+                        <label
+                          htmlFor="cover-image-upload"
+                          className="px-4 py-2 text-xs font-medium text-white bg-zinc-800 hover:bg-zinc-700 rounded-lg cursor-pointer transition-colors border border-zinc-700"
+                        >
+                          Change Image
+                        </label>
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="px-4 py-2 text-xs font-medium text-rose-400 bg-zinc-800 hover:bg-rose-500/10 rounded-lg transition-colors border border-zinc-700 hover:border-rose-500/30"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      {/* File info */}
+                      <div className="mt-2 flex items-center gap-2 text-xs text-zinc-500">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span>{coverImageFile?.name}</span>
+                        <span className="text-zinc-600">·</span>
+                        <span>{(coverImageFile?.size / (1024 * 1024)).toFixed(2)} MB</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {errors.coverImage && (
+                    <p className="mt-2 text-xs text-rose-400">{errors.coverImage}</p>
+                  )}
+                </div>
+                
+                {/* Gallery Images (unchanged) */}
                 <div className="pt-4 border-t border-zinc-800/50">
                   <div className="flex items-center justify-between mb-4">
                     <label className="block text-sm font-medium text-zinc-300">Gallery Image URLs (Optional)</label>

@@ -160,7 +160,7 @@ const EditProfile = () => {
                   Profile Image
                 </label>
                 <div className="flex items-center gap-4">
-                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center">
                     <span className="text-2xl font-bold text-white">
                       {user?.name
                         ?.split(" ")

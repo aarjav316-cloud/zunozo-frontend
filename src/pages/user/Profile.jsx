@@ -115,7 +115,7 @@ const Profile = () => {
                   className="w-32 h-32 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center">
                   <span className="text-4xl font-bold text-white">
                     {getInitials(user?.name)}
                   </span>

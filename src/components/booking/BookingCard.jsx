@@ -248,7 +248,7 @@ const BookingCard = ({ booking, onCancelled, onViewDetails }) => {
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0 w-full sm:w-auto">
                 {booking.bookingStatus === "CONFIRMED" &&
                   booking.paymentStatus === "PAID" &&
                   booking.ticketCode &&
@@ -257,27 +257,27 @@ const BookingCard = ({ booking, onCancelled, onViewDetails }) => {
                       onClick={() =>
                         navigate(`/bookings/${booking.bookingId}`)
                       }
-                      className="px-4 py-2 bg-[#6366F1] text-white rounded-lg text-sm font-semibold hover:bg-[#5558E6] transition-colors flex items-center gap-1.5"
+                      className="h-10 px-4 bg-white text-black font-semibold text-xs tracking-wider uppercase rounded-lg hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5 shrink-0" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
                       </svg>
-                      View Ticket
+                      <span>VIEW TICKET</span>
                     </button>
                   )}
                 <button
                   onClick={onViewDetails}
-                  className="px-4 py-2 bg-white text-black rounded-lg text-sm font-semibold hover:bg-zinc-100 transition-colors"
+                  className="h-10 px-4 bg-[#121215] border border-white/10 text-white font-semibold text-xs tracking-wider uppercase rounded-lg hover:bg-zinc-800 hover:border-white/20 transition-colors flex items-center justify-center w-full sm:w-auto"
                 >
-                  View Details
+                  VIEW DETAILS
                 </button>
 
                 {canCancel && (
                   <button
                     onClick={() => setShowCancelModal(true)}
-                    className="px-4 py-2 bg-zinc-900 border border-zinc-700 text-zinc-300 rounded-lg text-sm font-medium hover:bg-rose-500/10 hover:border-rose-500/20 hover:text-rose-400 transition-all"
+                    className="h-10 px-4 bg-transparent border border-white/10 text-zinc-400 font-semibold text-xs tracking-wider uppercase rounded-lg hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/5 transition-all flex items-center justify-center w-full sm:w-auto"
                   >
-                    Cancel
+                    CANCEL
                   </button>
                 )}
               </div>

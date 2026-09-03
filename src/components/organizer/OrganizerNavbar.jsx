@@ -71,9 +71,9 @@ const OrganizerNavbar = () => {
               {/* Profile Avatar */}
               <Link
                 to="/profile/organizer"
-                className="w-10 h-10 rounded-full bg-white text-black font-semibold flex items-center justify-center hover:bg-zinc-200 transition-colors shadow-sm shrink-0"
+                className="w-10 h-10 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center hover:bg-zinc-900 transition-colors shadow-sm shrink-0"
               >
-                <span className="text-sm font-bold text-black">
+                <span className="text-sm font-bold text-white">
                   {getInitials(user?.name)}
                 </span>
               </Link>
@@ -85,9 +85,9 @@ const OrganizerNavbar = () => {
 
               <Link
                 to="/profile/organizer"
-                className="w-9 h-9 rounded-full bg-white text-black font-semibold flex items-center justify-center shrink-0"
+                className="w-9 h-9 rounded-full bg-[#000000] border border-white/10 flex items-center justify-center shrink-0"
               >
-                <span className="text-xs font-bold text-black">
+                <span className="text-xs font-bold text-white">
                   {getInitials(user?.name)}
                 </span>
               </Link>

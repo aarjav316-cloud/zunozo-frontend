@@ -99,7 +99,7 @@ const OrganizerDetails = () => {
           {organizer.avatar ? (
             <img src={organizer.avatar} alt={organizer.name} className="w-32 h-32 rounded-full object-cover border-4 border-zinc-800 shadow-xl" />
           ) : (
-            <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-4xl shadow-xl border-4 border-zinc-800">
+            <div className="w-32 h-32 rounded-full bg-[#000000] flex items-center justify-center text-white font-bold text-4xl shadow-xl border-4 border-zinc-800">
               {organizer.name ? organizer.name.charAt(0).toUpperCase() : "O"}
             </div>
           )}
