@@ -154,9 +154,9 @@ const EventBookings = () => {
     <div className="min-h-screen bg-[#09090B]">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6 mb-8">
-            <div>
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div className="w-full min-w-0">
               <button 
                 onClick={() => navigate("/organizer/events")}
                 className="text-zinc-500 hover:text-white transition-colors flex items-center gap-2 mb-4 text-sm"
@@ -164,12 +164,12 @@ const EventBookings = () => {
                 &larr; Back to Events
               </button>
               <h1
-                className="text-4xl md:text-5xl font-bold text-white tracking-tight mb-2"
+                className="text-3xl md:text-5xl font-bold text-white tracking-tight mb-2 break-words text-wrap"
                 style={{ fontFamily: '"Geist", sans-serif', letterSpacing: "-0.03em" }}
               >
                 {data.event?.title || "Event Bookings"}
               </h1>
-              <p className="text-zinc-500">Manage attendees and view check-ins</p>
+              <p className="text-zinc-500 text-sm md:text-base break-words text-wrap">Manage attendees and view check-ins</p>
             </div>
           </div>
 
@@ -219,7 +219,7 @@ const EventBookings = () => {
           </div>
 
           <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
+            <div className="relative flex-1 w-full min-w-0">
               <input
                 type="text"
                 placeholder="Search by Ticket Code..."
@@ -229,12 +229,12 @@ const EventBookings = () => {
               />
             </div>
             
-            <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 pb-1 overflow-x-auto w-full md:w-auto touch-pan-x [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {statusOptions.map((status) => (
                 <button
                   key={status}
                   onClick={() => { setStatusFilter(status); setPage(1); }}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                  className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
                     statusFilter === status
                       ? "bg-white text-black"
                       : "bg-[#18181B] text-zinc-400 border border-zinc-800 hover:bg-zinc-800 hover:text-white"
@@ -247,11 +247,11 @@ const EventBookings = () => {
           </div>
         </div>
 
-        {/* Bookings Table */}
+        {/* Bookings Table / Mobile Cards */}
         <div className="bg-[#18181B] border border-zinc-800 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-zinc-400">
-              <thead className="bg-[#18181B] border-b border-zinc-800 text-xs uppercase font-medium">
+          <div className="w-full">
+            <table className="w-full text-left text-sm text-zinc-400 block md:table">
+              <thead className="hidden md:table-header-group bg-[#18181B] border-b border-zinc-800 text-xs uppercase font-medium">
                 <tr>
                   <th className="px-6 py-4">Attendee</th>
                   <th className="px-6 py-4">Ticket Code</th>
@@ -260,67 +260,138 @@ const EventBookings = () => {
                   <th className="px-6 py-4 text-right">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800">
+              <tbody className="divide-y divide-zinc-800 block md:table-row-group">
                 {data.bookings.length > 0 ? (
                   data.bookings.map((booking) => (
-                    <tr key={booking._id} className="hover:bg-zinc-900/50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="text-white font-medium">{booking.user?.name || "Unknown"}</div>
-                        <div className="text-xs text-zinc-500">{booking.user?.email || "-"}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-mono bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-md text-xs font-semibold tracking-wider">
-                          {booking.ticketCode}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col gap-1">
-                          <span className={`${
-                            booking.bookingStatus === 'CONFIRMED' ? 'text-emerald-400' :
-                            booking.bookingStatus === 'CANCELLED' ? 'text-rose-400' :
-                            'text-amber-400'
-                          }`}>
-                            {booking.bookingStatus}
+                    <React.Fragment key={booking._id}>
+                      {/* Desktop Row */}
+                      <tr className="hidden md:table-row hover:bg-zinc-900/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="text-white font-medium">{booking.user?.name || "Unknown"}</div>
+                          <div className="text-xs text-zinc-500 truncate max-w-[200px]">{booking.user?.email || "-"}</div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono bg-zinc-800 text-zinc-300 px-2.5 py-1 rounded-md text-xs font-semibold tracking-wider">
+                            {booking.ticketCode}
                           </span>
-                          <span className="text-xs text-zinc-600">
-                            {booking.paymentStatus}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-white">
-                        {booking.quantity}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {booking.bookingStatus === 'CONFIRMED' ? (
-                           booking.checkedIn ? (
-                             <span className="text-emerald-400 text-xs font-medium px-3 py-1.5 bg-emerald-400/10 rounded-full">
-                               Checked In
-                             </span>
-                           ) : (
-                             <button
-                               onClick={() => handleCheckIn(booking.ticketCode)}
-                               disabled={isCheckingIn}
-                               className="px-4 py-1.5 bg-white text-black text-xs font-medium rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-50"
-                             >
-                               Check In
-                             </button>
-                           )
-                        ) : (
-                           <span className="text-zinc-600 text-xs">-</span>
-                        )}
-                      </td>
-                    </tr>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            <span className={`font-medium ${
+                              booking.bookingStatus === 'CONFIRMED' ? 'text-emerald-400' :
+                              booking.bookingStatus === 'CANCELLED' ? 'text-rose-400' :
+                              'text-amber-400'
+                            }`}>
+                              {booking.bookingStatus}
+                            </span>
+                            <span className="text-[11px] text-zinc-500 uppercase tracking-wide">
+                              {booking.paymentStatus}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-white font-medium">
+                          {booking.quantity}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          {booking.bookingStatus === 'CONFIRMED' ? (
+                             booking.checkedIn ? (
+                               <span className="text-emerald-400 text-xs font-medium px-3 py-1.5 bg-emerald-400/10 rounded-full border border-emerald-500/20">
+                                 Checked In
+                               </span>
+                             ) : (
+                               <button
+                                 onClick={() => handleCheckIn(booking.ticketCode)}
+                                 disabled={isCheckingIn}
+                                 className="px-4 py-1.5 bg-white text-black text-xs font-medium rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-50"
+                               >
+                                 Check In
+                               </button>
+                             )
+                          ) : (
+                             <span className="text-zinc-600 text-xs">-</span>
+                          )}
+                        </td>
+                      </tr>
+
+                      {/* Mobile Row (Card format) */}
+                      <tr className="md:hidden flex flex-col p-5">
+                        <td className="block">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="min-w-0 pr-4">
+                              <div className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase mb-1">Attendee</div>
+                              <div className="text-white font-medium text-sm truncate">{booking.user?.name || "Unknown"}</div>
+                              <div className="text-xs text-zinc-400 truncate">{booking.user?.email || "-"}</div>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              <div className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase mb-1">Status</div>
+                              <div className="flex flex-col items-end gap-1">
+                                <span className={`text-xs font-bold ${
+                                  booking.bookingStatus === 'CONFIRMED' ? 'text-emerald-400' :
+                                  booking.bookingStatus === 'CANCELLED' ? 'text-rose-400' :
+                                  'text-amber-400'
+                                }`}>
+                                  {booking.bookingStatus}
+                                </span>
+                                <span className="text-[10px] text-zinc-500 uppercase tracking-wide">
+                                  {booking.paymentStatus}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-end mb-4">
+                            <div>
+                              <div className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase mb-1">Ticket Code</div>
+                              <span className="font-mono bg-zinc-800 text-zinc-300 px-2 py-1 rounded text-xs font-semibold tracking-wider">
+                                {booking.ticketCode}
+                              </span>
+                            </div>
+                            <div className="text-right">
+                               <div className="text-[10px] font-bold tracking-wider text-zinc-500 uppercase mb-1">Tickets</div>
+                               <div className="text-white text-sm font-medium">{booking.quantity}</div>
+                            </div>
+                          </div>
+
+                          <div className="pt-4 border-t border-zinc-800/50">
+                              {booking.bookingStatus === 'CONFIRMED' ? (
+                                 booking.checkedIn ? (
+                                   <div className="w-full text-emerald-400 text-xs font-medium px-4 py-2 bg-emerald-400/10 rounded-lg text-center border border-emerald-500/20">
+                                     Checked In
+                                   </div>
+                                 ) : (
+                                   <button
+                                     onClick={() => handleCheckIn(booking.ticketCode)}
+                                     disabled={isCheckingIn}
+                                     className="w-full px-4 py-2 bg-white text-black text-xs font-bold tracking-wide uppercase rounded-lg hover:bg-zinc-200 transition-colors disabled:opacity-50"
+                                   >
+                                     Check In Attendee
+                                   </button>
+                                 )
+                              ) : (
+                                 <div className="text-zinc-600 text-xs w-full text-center py-2 uppercase tracking-wide font-medium">Inactive Ticket</div>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+                    </React.Fragment>
                   ))
                 ) : (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center text-zinc-500">
-                      No bookings found for the given criteria.
+                  <tr className="block md:table-row">
+                    <td colSpan="5" className="block md:table-cell px-6 py-16 text-center">
+                      <div className="flex flex-col items-center justify-center">
+                        <svg className="w-12 h-12 text-zinc-700 mb-4" fill="none" strokeWidth="1" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
+                        </svg>
+                        <h3 className="text-sm font-medium text-zinc-300 mb-1">No bookings found</h3>
+                        <p className="text-xs text-zinc-500 max-w-[250px] mx-auto leading-relaxed">Try adjusting your search criteria or switching the status filter.</p>
+                      </div>
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
           </div>
+        </div>
 
           {/* Pagination */}
           {data.pagination?.totalPages > 1 && (
@@ -348,7 +419,6 @@ const EventBookings = () => {
             </div>
           )}
         </div>
-      </div>
 
       {toast && (
         <Toast

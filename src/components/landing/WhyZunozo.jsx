@@ -2,10 +2,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import step1Image from "../../assets/step1image.webp";
-import step2Image from "../../assets/step2image.jpg";
-import step3Image from "../../assets/step3image.jpg";
-import step4Image from "../../assets/step4image.jpg";
+import step1Image from "../../assets/newstep1.jpg";
+import step2Image from "../../assets/newstep2.jpg";
+import step3Image from "../../assets/step2.jpeg";
+import step4Image from "../../assets/newstep4.jpg";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -493,22 +493,6 @@ const WhyZunozo = () => {
                 Meet people, join communities, create memories. This is where
                 the magic happens.
               </p>
-              <div className="pt-4">
-                <p className="text-sm text-zinc-500 mb-2">
-                  Join thousands already creating memories
-                </p>
-                <div className="flex -space-x-3">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-10 h-10 rounded-full bg-linear-to-br from-purple-600 to-orange-500 border-2 border-zinc-900"
-                    />
-                  ))}
-                  <div className="w-10 h-10 rounded-full bg-white/10 border-2 border-zinc-900 flex items-center justify-center text-xs text-zinc-400">
-                    +2k
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 

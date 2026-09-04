@@ -150,91 +150,66 @@ const BrowseEvents = () => {
   return (
     <div className="min-h-screen bg-[#09090B]">
       {/* Header */}
-      <header className="border-b border-white/5 sticky top-0 bg-[#09090B]/80 backdrop-blur-xl z-40">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <button
-            onClick={() => navigate("/")}
-            className="text-white/60 hover:text-white transition-colors mb-6 flex items-center gap-2 text-sm font-medium"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              strokeWidth="2"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      <header className="border-b border-white/5 sticky top-0 bg-[#09090B]/90 backdrop-blur-xl z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <h1
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-tight break-words"
+              style={{ fontFamily: '"Geist", sans-serif', letterSpacing: "-0.03em" }}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-              />
-            </svg>
-            Back to Home
-          </button>
-          <h1
-            className="text-5xl md:text-6xl font-bold text-white tracking-tight mb-8"
-            style={{
-              fontFamily: '"Geist", sans-serif',
-              letterSpacing: "-0.03em",
-            }}
-          >
-            Browse Events
-          </h1>
+              Browse Events
+            </h1>
+            <button
+              onClick={() => navigate("/")}
+              className="p-2 text-zinc-500 hover:text-white hover:bg-white/5 active:bg-white/10 rounded-full transition-all flex-shrink-0"
+              aria-label="Back to Home"
+            >
+              <svg className="w-7 h-7 sm:w-8 sm:h-8" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
 
           {/* Search Bar */}
-          <div className="relative max-w-2xl">
+          <div className="relative w-full max-w-2xl mb-6">
             <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500"
               fill="none"
               strokeWidth="2"
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
             </svg>
             <input
               type="text"
               placeholder="Search events by name or location..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-4 bg-zinc-900/50 border border-white/10 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 focus:bg-zinc-900/80 transition-all"
+              className="w-full pl-12 pr-12 py-3.5 md:py-4 bg-[#18181B] border border-zinc-800 rounded-xl text-white text-sm md:text-base placeholder-zinc-500 focus:outline-none focus:border-[#6366F1] transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  strokeWidth="2"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
+                <svg className="w-5 h-5" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             )}
           </div>
 
           {/* Category Filter Chips */}
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide mt-6 pb-2">
+          <div className="flex gap-2.5 overflow-x-auto touch-pan-x [&::-webkit-scrollbar]:hidden w-full pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
+                className={`px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap flex-shrink-0 transition-all ${
                   selectedCategory === category
                     ? "bg-white text-black"
-                    : "bg-zinc-900/50 text-gray-400 border border-white/10 hover:bg-zinc-800 hover:text-white"
+                    : "bg-[#18181B] text-zinc-400 border border-zinc-800 hover:bg-zinc-800 hover:text-white"
                 }`}
               >
                 {category}
@@ -245,31 +220,21 @@ const BrowseEvents = () => {
       </header>
 
       {/* Events Grid */}
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
         {filteredEvents.length === 0 ? (
-          <div className="text-center py-24">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-zinc-900 flex items-center justify-center">
-              <svg
-                className="w-10 h-10 text-gray-600"
-                fill="none"
-                strokeWidth="2"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
-                />
+          <div className="text-center py-20 px-4">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-zinc-900 flex items-center justify-center">
+              <svg className="w-8 h-8 text-zinc-600" fill="none" strokeWidth="2" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">
+            <h2 className="text-xl font-bold text-white mb-2">
               No events found
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-sm text-zinc-500 mb-6 max-w-sm mx-auto">
               {searchQuery || selectedCategory !== "All"
-                ? "Try adjusting your filters"
-                : "Check back soon for upcoming events"}
+                ? "Try adjusting your filters or search query to find more events."
+                : "Check back soon for upcoming events."}
             </p>
             {(searchQuery || selectedCategory !== "All") && (
               <button
@@ -277,7 +242,7 @@ const BrowseEvents = () => {
                   setSearchQuery("");
                   setSelectedCategory("All");
                 }}
-                className="px-6 py-3 bg-zinc-900 text-white rounded-full font-semibold hover:bg-zinc-800 transition-colors"
+                className="px-6 py-2.5 bg-zinc-900 text-white rounded-xl text-sm font-semibold hover:bg-zinc-800 transition-colors"
               >
                 Clear Filters
               </button>
@@ -286,14 +251,15 @@ const BrowseEvents = () => {
         ) : (
           <>
             <div className="flex items-center justify-between mb-8">
-              <p className="text-gray-400">
-                {filteredEvents.length}{" "}
-                {filteredEvents.length === 1 ? "event" : "events"} found
+              <p className="text-sm font-medium text-zinc-500">
+                {filteredEvents.length} {filteredEvents.length === 1 ? "event" : "events"} found
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {filteredEvents.map((event) => (
-                <EventCard key={event._id} event={event} />
+                <div key={event._id} className="w-full [&>div]:w-full [&>div]:mx-auto">
+                  <EventCard event={event} />
+                </div>
               ))}
             </div>
           </>
