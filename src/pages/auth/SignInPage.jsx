@@ -41,7 +41,7 @@ function SignInPage() {
   };
 
   const handleGoogleAuth = () => {
-    window.location.href = "http://localhost:5000/api/v1/auth/google";
+    window.location.href = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? "https://zunozo-backend.onrender.com/api/v1" : "http://localhost:5000/api/v1")) + "/auth/google";
   };
 
   return (
