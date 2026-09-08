@@ -8,6 +8,7 @@ import SignInPage from "../pages/auth/SignInPage";
 import ForgotPasswordPage from "../pages/auth/ForgotPassword";
 import ForgotPasswordFlow from "../pages/auth/ForgotPasswordFlow";
 import ResetPasswordPage from "../pages/auth/ResetPassword";
+import GoogleCallbackPage from "../pages/auth/GoogleCallbackPage";
 import BrowseEvents from "../pages/public/BrowseEvents";
 import EventDetails from "../pages/public/EventDetails";
 import MyEvents from "../pages/organizer/MyEvents";
@@ -178,6 +179,7 @@ const AppRoutes = () => {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordFlow />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
