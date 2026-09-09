@@ -26,13 +26,13 @@ const EventCard = ({ event }) => {
   const { month, day } = formatDate(event.startDate);
 
   return (
-    <div onClick={handleClick} className="flex-none w-80 group cursor-pointer">
+    <div onClick={handleClick} className="flex-none w-72 sm:w-80 group cursor-pointer">
       {/* Card Container with Premium Shadow */}
-      <div className="relative rounded-[28px] transition-all duration-500 ease-out group-hover:-translate-y-3 group-hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
+      <div className="relative rounded-[24px] sm:rounded-[28px] transition-all duration-500 ease-out group-hover:-translate-y-3 group-hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)]">
         {/* Main Card - Layered Glass Effect */}
-        <div className="relative rounded-[28px] overflow-hidden bg-gradient-to-b from-zinc-900/40 to-zinc-950/80 backdrop-blur-sm border border-white/5">
+        <div className="relative rounded-[24px] sm:rounded-[28px] overflow-hidden bg-gradient-to-b from-zinc-900/40 to-zinc-950/80 backdrop-blur-sm border border-white/5">
           {/* Image Section with Enhanced Gradient */}
-          <div className="relative h-80 overflow-hidden">
+          <div className="relative h-60 sm:h-72 md:h-80 overflow-hidden">
             {/* Event Image */}
             {event.coverImage ? (
               <img
@@ -57,11 +57,11 @@ const EventCard = ({ event }) => {
             />
 
             {/* Floating UI Elements */}
-            <div className="absolute top-4 left-4 right-4 flex items-start justify-between z-10">
+            <div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex items-start justify-between z-10">
               {/* Premium Glass Category Badge */}
               {event.category && (
-                <div className="group/badge backdrop-blur-xl bg-white/[0.08] border border-white/10 rounded-full px-3.5 py-1.5 shadow-lg transition-all duration-300 hover:bg-white/[0.12] hover:border-white/20">
-                  <span className="text-[11px] font-semibold text-white tracking-wide">
+                <div className="group/badge backdrop-blur-xl bg-white/[0.08] border border-white/10 rounded-full px-3 sm:px-3.5 py-1 sm:py-1.5 shadow-lg transition-all duration-300 hover:bg-white/[0.12] hover:border-white/20">
+                  <span className="text-[10px] sm:text-[11px] font-semibold text-white tracking-wide">
                     {event.category}
                   </span>
                 </div>
@@ -70,10 +70,10 @@ const EventCard = ({ event }) => {
               {/* Premium Bookmark Button */}
               <button
                 onClick={handleBookmark}
-                className="backdrop-blur-xl bg-white/[0.08] border border-white/10 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-300 hover:bg-white/[0.15] hover:scale-110 hover:rotate-12 shadow-lg active:scale-95"
+                className="backdrop-blur-xl bg-white/[0.08] border border-white/10 rounded-full w-8 sm:w-10 h-8 sm:h-10 flex items-center justify-center transition-all duration-300 hover:bg-white/[0.15] hover:scale-110 hover:rotate-12 shadow-lg active:scale-95"
               >
                 <svg
-                  className={`w-[18px] h-[18px] transition-all duration-300 ${
+                  className={`w-4 sm:w-[18px] h-4 sm:h-[18px] transition-all duration-300 ${
                     isBookmarked
                       ? "fill-purple-400 stroke-purple-400 scale-110"
                       : "fill-none stroke-white"
@@ -92,9 +92,9 @@ const EventCard = ({ event }) => {
             </div>
 
             {/* Premium Glassmorphism Date Widget */}
-            <div className="absolute bottom-4 left-4 z-10 group/date">
+            <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 z-10 group/date">
               <div
-                className="backdrop-blur-xl rounded-2xl px-3 py-2 border border-white/[0.18] transition-all duration-300 ease-out group-hover/date:scale-[1.03] group-hover/date:border-white/25 group-hover/date:backdrop-blur-2xl"
+                className="backdrop-blur-xl rounded-xl sm:rounded-2xl px-2.5 sm:px-3 py-1.5 sm:py-2 border border-white/[0.18] transition-all duration-300 ease-out group-hover/date:scale-[1.03] group-hover/date:border-white/25 group-hover/date:backdrop-blur-2xl"
                 style={{
                   background:
                     "linear-gradient(135deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.12) 100%)",
@@ -111,7 +111,7 @@ const EventCard = ({ event }) => {
                 </div>
                 {/* Day */}
                 <div
-                  className="text-lg font-bold leading-none"
+                  className="text-base sm:text-lg font-bold leading-none"
                   style={{
                     color: "rgba(255,255,255,0.95)",
                     letterSpacing: "-0.02em",
@@ -124,13 +124,13 @@ const EventCard = ({ event }) => {
           </div>
 
           {/* Immersive Bottom Section - Blends with Image */}
-          <div className="relative px-5 pt-6 pb-5">
+          <div className="relative px-4 sm:px-5 pt-4 sm:pt-6 pb-4 sm:pb-5">
             {/* Subtle Top Highlight Line */}
-            <div className="absolute top-0 left-5 right-5 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="absolute top-0 left-4 sm:left-5 right-4 sm:right-5 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
             {/* Event Title - Hero Typography */}
             <h3
-              className="text-[22px] font-bold text-white leading-[1.2] line-clamp-2 mb-4 tracking-[-0.02em]"
+              className="text-[18px] sm:text-[22px] font-bold text-white leading-[1.2] line-clamp-2 mb-2 sm:mb-4 tracking-[-0.02em]"
               style={{
                 textShadow: "0 2px 8px rgba(0,0,0,0.3)",
               }}
@@ -139,7 +139,7 @@ const EventCard = ({ event }) => {
             </h3>
 
             {/* Location - Refined Secondary Info */}
-            <div className="flex items-center gap-2 mb-5">
+            <div className="flex items-center gap-2 mb-3 sm:mb-5">
               <svg
                 className="w-3.5 h-3.5 text-gray-500 shrink-0"
                 fill="none"
@@ -158,7 +158,7 @@ const EventCard = ({ event }) => {
                   d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
                 />
               </svg>
-              <p className="text-[13px] text-gray-400 font-medium tracking-wide">
+              <p className="text-[12px] sm:text-[13px] text-gray-400 font-medium tracking-wide">
                 {event.venue?.city}
                 {event.venue?.state && `, ${event.venue.state}`}
               </p>
@@ -169,7 +169,7 @@ const EventCard = ({ event }) => {
               {/* Price with Accent */}
               <div className="flex items-center gap-2">
                 <span
-                  className="text-2xl font-bold text-white tracking-tight"
+                  className="text-xl sm:text-2xl font-bold text-white tracking-tight"
                   style={{ letterSpacing: "-0.03em" }}
                 >
                   {event.isFree ? "Free" : `₹${event.price}`}

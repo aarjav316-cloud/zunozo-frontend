@@ -257,7 +257,7 @@ const BrowseEvents = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {filteredEvents.map((event) => (
-                <div key={event._id} className="w-full [&>div]:w-full [&>div]:mx-auto">
+                <div key={event._id} className="w-full max-w-[340px] sm:max-w-none mx-auto [&>div]:w-full [&>div]:mx-auto">
                   <EventCard event={event} />
                 </div>
               ))}
