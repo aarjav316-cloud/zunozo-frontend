@@ -277,7 +277,7 @@ const Navbar = () => {
             {authLoading ? (
               <div className="w-10 h-10 rounded-full bg-white/10 animate-pulse" />
             ) : user ? (
-              <>
+              <div className="flex items-center gap-3">
                 <NotificationBell />
                 <Link
                   to="/profile"
@@ -285,7 +285,7 @@ const Navbar = () => {
                 >
                   {user.name?.charAt(0).toUpperCase() || "U"}
                 </Link>
-              </>
+              </div>
             ) : (
               <Link
                 to="/signin"
