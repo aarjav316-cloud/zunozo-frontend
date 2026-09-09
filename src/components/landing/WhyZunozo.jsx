@@ -366,8 +366,8 @@ const WhyZunozo = () => {
               </div>
             </div>
             <div className="relative order-1 lg:order-2">
-              <div className="max-w-xs mx-auto bg-zinc-900 rounded-3xl p-4 shadow-2xl border border-white/10">
-                <div className="w-full aspect-9/16 relative rounded-2xl overflow-hidden">
+              <div className="max-w-xs mx-auto bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10">
+                <div className="w-full aspect-9/16 relative">
                   <img
                     src={step1Image}
                     alt="Event Discovery"
